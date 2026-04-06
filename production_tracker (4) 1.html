@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Production Tracker — IST</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #161a23;
+    --surface2: #1e2330;
+    --border: #2a2f3d;
+    --accent: #4f8ef7;
+    --accent2: #a78bfa;
+    --green: #34d399;
+    --red: #f87171;
+    --yellow: #fbbf24;
+    --orange: #fb923c;
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --input-bg: #1a1f2e;
+    --radius: 8px;
+    --font-head: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 13px;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(135deg, #0d0f14 0%, #161a23 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+  }
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .logo {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-head);
+    font-weight: 800; font-size: 16px; color: #fff;
+  }
+  .title { font-family: var(--font-head); font-weight: 700; font-size: 18px; letter-spacing: -0.5px; }
+  .title span { color: var(--accent); }
+  .ist-badge {
+    background: rgba(79,142,247,0.12);
+    border: 1px solid rgba(79,142,247,0.3);
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+  }
+  .header-right { display: flex; align-items: center; gap: 10px; }
+  .ist-clock {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--green);
+    background: rgba(52,211,153,0.08);
+    border: 1px solid rgba(52,211,153,0.2);
+    padding: 6px 14px;
+    border-radius: 6px;
+  }
+
+  /* ── TOOLBAR ── */
+  .toolbar {
+    padding: 12px 24px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    padding: 7px 16px;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 500;
+    display: flex; align-items: center; gap: 6px;
+    transition: all 0.15s;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #3d7de8; }
+  .btn-success { background: var(--green); color: #0d0f14; }
+  .btn-success:hover { background: #2fbe8c; }
+  .btn-danger { background: var(--red); color: #fff; }
+  .btn-danger:hover { background: #e55a5a; }
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-purple { background: var(--accent2); color: #fff; }
+  .btn-purple:hover { background: #9171e8; }
+
+  .sep { width: 1px; height: 28px; background: var(--border); }
+
+  .stats-bar {
+    margin-left: auto;
+    display: flex; gap: 16px;
+  }
+  .stat-chip {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .stat-chip strong { color: var(--text); }
+
+  /* ── MAIN TABLE CONTAINER ── */
+  .table-wrap {
+    overflow-x: auto;
+    padding: 20px 24px;
+    min-height: calc(100vh - 130px);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    min-width: 1500px;
+  }
+
+  thead th {
+    background: var(--surface2);
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    white-space: nowrap;
+    user-select: none;
+  }
+  thead th:first-child { border-radius: 8px 0 0 0; border-left: 1px solid var(--border); border-top: 1px solid var(--border); }
+  thead th:last-child { border-radius: 0 8px 0 0; border-top: 1px solid var(--border); }
+  thead th.col-num { width: 44px; text-align: center; }
+  thead th.col-actions { width: 60px; text-align: center; }
+
+  tbody tr {
+    transition: background 0.12s;
+  }
+  tbody tr:hover { background: rgba(255,255,255,0.025); }
+  tbody tr.selected { background: rgba(79,142,247,0.08); }
+
+  tbody td {
+    padding: 6px 8px;
+    border-bottom: 1px solid rgba(42,47,61,0.7);
+    border-right: 1px solid rgba(42,47,61,0.5);
+    vertical-align: middle;
+  }
+  tbody td:first-child { border-left: 1px solid rgba(42,47,61,0.7); }
+  tbody tr:last-child td:first-child { border-radius: 0 0 0 8px; }
+  tbody tr:last-child td:last-child { border-radius: 0 0 8px 0; }
+
+  .row-num {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--muted);
+    width: 44px;
+  }
+
+  /* ── CELL INPUTS ── */
+  .cell-input, .cell-select {
+    width: 100%;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 12px;
+    padding: 4px 6px;
+    border-radius: 4px;
+    outline: none;
+    transition: border 0.15s, background 0.15s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .cell-input:focus, .cell-select:focus {
+    border-color: var(--accent);
+    background: rgba(79,142,247,0.07);
+  }
+  .cell-input:hover, .cell-select:hover {
+    border-color: var(--border);
+    background: var(--input-bg);
+  }
+  .cell-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b7280'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 6px center;
+    padding-right: 22px;
+    cursor: pointer;
+  }
+  .cell-select option {
+    background: #1e2330;
+    color: var(--text);
+  }
+  input[type="date"].cell-input {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color-scheme: dark;
+  }
+  input[type="number"].cell-input {
+    font-family: var(--font-mono);
+    text-align: right;
+  }
+
+  /* ── STATUS BADGES ── */
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .status-otto { background: rgba(167,139,250,0.15); color: var(--accent2); border: 1px solid rgba(167,139,250,0.3); }
+  .status-pkg  { background: rgba(79,142,247,0.15); color: var(--accent); border: 1px solid rgba(79,142,247,0.3); }
+  .status-epi  { background: rgba(52,211,153,0.15); color: var(--green); border: 1px solid rgba(52,211,153,0.3); }
+  .status-both { background: rgba(251,191,36,0.15); color: var(--yellow); border: 1px solid rgba(251,191,36,0.3); }
+  .status-bulk { background: rgba(251,146,60,0.15); color: var(--orange); border: 1px solid rgba(251,146,60,0.3); }
+  .status-other{ background: rgba(107,114,128,0.15); color: var(--muted); border: 1px solid rgba(107,114,128,0.3); }
+
+  /* ── RATE CHECKBOX ── */
+  .rate-wrap { display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .rate-wrap input[type=checkbox] { display: none; }
+  .rate-pill {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .rate-pill.yes { background: rgba(52,211,153,0.15); color: var(--green); border-color: rgba(52,211,153,0.4); }
+  .rate-pill.no { background: rgba(248,113,113,0.12); color: var(--red); border-color: rgba(248,113,113,0.3); }
+
+  /* ── TIMER ── */
+  .timer-wrap {
+    display: flex; align-items: center; gap: 4px;
+    white-space: nowrap;
+  }
+  .timer-btn {
+    width: 26px; height: 26px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    transition: all 0.15s;
+  }
+  .timer-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(79,142,247,0.08); }
+  .timer-btn.active { border-color: var(--green); color: var(--green); background: rgba(52,211,153,0.1); }
+  .timer-display {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text);
+    min-width: 52px;
+    text-align: center;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 3px 5px;
+  }
+  .timer-display.running { color: var(--green); border-color: rgba(52,211,153,0.3); }
+
+  .time-cell {
+    display: flex; align-items: center; gap: 4px;
+  }
+  .time-value {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    min-width: 58px;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 3px 6px;
+    text-align: center;
+  }
+
+  /* ── ACTIONS ── */
+  .action-btns { display: flex; gap: 4px; justify-content: center; }
+  .icon-btn {
+    width: 24px; height: 24px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    transition: all 0.12s;
+    background: transparent;
+    color: var(--muted);
+  }
+  .icon-btn:hover { background: rgba(248,113,113,0.15); color: var(--red); }
+  .icon-btn.copy:hover { background: rgba(79,142,247,0.15); color: var(--accent); }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+    width: 380px;
+    max-width: 95vw;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .modal h3 { font-family: var(--font-head); font-size: 16px; margin-bottom: 20px; }
+  .modal-field { margin-bottom: 14px; }
+  .modal-field label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 5px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .modal-field input, .modal-field select {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 13px;
+    padding: 9px 12px;
+    border-radius: 6px;
+    outline: none;
+    transition: border 0.15s;
+  }
+  .modal-field input:focus, .modal-field select:focus { border-color: var(--accent); }
+  .modal-actions { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--surface2);
+    border: 1px solid var(--green);
+    color: var(--green);
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    z-index: 999;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.3s;
+    pointer-events: none;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* ── MANAGE TABS ── */
+  .manage-tabs {
+    display: flex; gap: 6px;
+    margin-bottom: 16px;
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 4px;
+  }
+  .manage-tab {
+    flex: 1;
+    padding: 7px 10px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .manage-tab:hover { color: var(--text); }
+  .manage-tab.active { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── CHECKBOX LIST ITEMS ── */
+  .check-item {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 7px 12px;
+    cursor: pointer;
+    transition: border 0.12s;
+  }
+  .check-item:hover { border-color: var(--accent); }
+  .check-item input[type=checkbox] {
+    width: 15px; height: 15px;
+    accent-color: var(--accent);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .check-item.checked { border-color: var(--red); background: rgba(248,113,113,0.06); }
+  .check-item label { cursor: pointer; font-size: 13px; flex:1; }
+
+  /* ── MANAGE LIST ── */
+  .manage-item {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 7px 12px;
+    font-size: 13px;
+  }
+  .manage-item-name { flex: 1; }
+  .manage-item-actions { display: flex; gap: 6px; }
+  .manage-item input {
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 13px;
+    outline: none;
+    width: 100%;
+  }
+  .manage-item input:focus { color: var(--accent); }
+  .mini-btn {
+    padding: 3px 9px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .mini-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .mini-btn.del:hover { border-color: var(--red); color: var(--red); }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+  .col-date { min-width: 130px; }
+  .col-month { min-width: 100px; }
+  .col-name { min-width: 110px; }
+  .col-episode { min-width: 150px; }
+  .col-db { min-width: 140px; }
+  .col-sdate { min-width: 130px; }
+  .col-edate { min-width: 130px; }
+  .col-status { min-width: 110px; }
+  .col-rate { min-width: 90px; }
+  .col-lines { min-width: 80px; }
+  .col-timer { min-width: 160px; }
+  .col-elapsed { min-width: 90px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo">PT</div>
+    <div>
+      <div class="title">Production <span>Tracker</span></div>
+    </div>
+    <div class="ist-badge">🇮🇳 IST</div>
+  </div>
+  <div class="header-right">
+    <div class="ist-clock" id="clock">--:--:-- IST</div>
+  </div>
+</div>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <button class="btn btn-primary" onclick="addRow()">＋ Add Row</button>
+  <button class="btn btn-purple" onclick="openNameModal()">👤 Manage Names</button>
+  <button class="btn btn-ghost" onclick="openDbModal()">🗄 Manage Database</button>
+  <button class="btn btn-ghost" onclick="openStatusModal()">🏷 Manage Status</button>
+  <div class="sep"></div>
+  <button class="btn btn-success" onclick="exportCSV()">⬇ Export CSV</button>
+  <button class="btn btn-ghost" onclick="clearAll()">🗑 Clear All</button>
+  <div class="stats-bar">
+    <span class="stat-chip">Rows: <strong id="stat-rows">0</strong></span>
+    <span class="stat-chip">Running: <strong id="stat-running" style="color:var(--green)">0</strong></span>
+  </div>
+</div>
+
+<!-- TABLE -->
+<div class="table-wrap">
+  <table id="mainTable">
+    <thead>
+      <tr>
+        <th class="col-num">#</th>
+        <th class="col-date">📅 Date (IST)</th>
+        <th class="col-month">Month</th>
+        <th class="col-name">Name</th>
+        <th class="col-episode">Episode Name</th>
+        <th class="col-db">Database</th>
+        <th class="col-sdate">Start Date</th>
+        <th class="col-edate">End Date</th>
+        <th class="col-status">Status</th>
+        <th class="col-rate">Rate</th>
+        <th class="col-lines">Lines</th>
+        <th class="col-timer">⏱ Timer</th>
+        <th class="col-elapsed">Elapsed</th>
+        <th class="col-actions">⚙</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
+
+<!-- MANAGE NAMES MODAL -->
+<div class="modal-overlay" id="nameModal">
+  <div class="modal" style="width:500px;max-height:90vh;display:flex;flex-direction:column">
+    <h3>👤 Manage Names</h3>
+    <div class="manage-tabs">
+      <button class="manage-tab active" onclick="switchTab('name','single')">＋ Add One</button>
+      <button class="manage-tab" onclick="switchTab('name','bulk')">⚡ Bulk Add</button>
+      <button class="manage-tab" onclick="switchTab('name','bulkdel')">🗑 Bulk Delete</button>
+    </div>
+    <!-- Single Add -->
+    <div id="name-tab-single" class="tab-panel active">
+      <div class="modal-field">
+        <label>Name</label>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="newNameInput" placeholder="Enter name..." style="flex:1" onkeydown="if(event.key==='Enter')addName()" />
+          <button class="btn btn-primary" onclick="addName()">＋ Add</button>
+        </div>
+      </div>
+    </div>
+    <!-- Bulk Add -->
+    <div id="name-tab-bulk" class="tab-panel">
+      <div class="modal-field">
+        <label>Paste or type names — one per line</label>
+        <textarea id="bulkNameInput" placeholder="John&#10;Jane&#10;Bob&#10;Alice" rows="6" style="width:100%;background:var(--input-bg);border:1px solid var(--border);color:var(--text);font-family:var(--font-body);font-size:13px;padding:9px 12px;border-radius:6px;outline:none;resize:vertical"></textarea>
+      </div>
+      <button class="btn btn-primary" style="width:100%" onclick="bulkAddNames()">⚡ Add All</button>
+    </div>
+    <!-- Bulk Delete -->
+    <div id="name-tab-bulkdel" class="tab-panel">
+      <div style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Select to delete</span>
+        <div style="display:flex;gap:6px">
+          <button class="mini-btn" onclick="selectAllManage('nameCheckboxes',true)">All</button>
+          <button class="mini-btn" onclick="selectAllManage('nameCheckboxes',false)">None</button>
+        </div>
+      </div>
+      <div id="nameCheckboxes" style="max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:5px;margin-bottom:12px"></div>
+      <button class="btn btn-danger" style="width:100%" onclick="bulkDeleteNames()">🗑 Delete Selected</button>
+    </div>
+    <div style="border-top:1px solid var(--border);margin-top:14px;padding-top:12px">
+      <label style="font-size:11px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;display:block;margin-bottom:8px">All Names <span id="names-count" style="color:var(--accent)"></span></label>
+      <div id="namesList" style="max-height:180px;overflow-y:auto;display:flex;flex-direction:column;gap:5px"></div>
+    </div>
+    <div class="modal-actions" style="margin-top:12px">
+      <button class="btn btn-ghost" onclick="closeModal('nameModal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- MANAGE DATABASE MODAL -->
+<div class="modal-overlay" id="dbModal">
+  <div class="modal" style="width:500px;max-height:90vh;display:flex;flex-direction:column">
+    <h3>🗄 Manage Databases</h3>
+    <div class="manage-tabs">
+      <button class="manage-tab active" onclick="switchTab('db','single')">＋ Add One</button>
+      <button class="manage-tab" onclick="switchTab('db','bulk')">⚡ Bulk Add</button>
+      <button class="manage-tab" onclick="switchTab('db','bulkdel')">🗑 Bulk Delete</button>
+    </div>
+    <div id="db-tab-single" class="tab-panel active">
+      <div class="modal-field">
+        <label>Database / Location</label>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="newDbInput" placeholder="Enter database or location..." style="flex:1" onkeydown="if(event.key==='Enter')addDatabase()" />
+          <button class="btn btn-primary" onclick="addDatabase()">＋ Add</button>
+        </div>
+      </div>
+    </div>
+    <div id="db-tab-bulk" class="tab-panel">
+      <div class="modal-field">
+        <label>Paste or type databases — one per line</label>
+        <textarea id="bulkDbInput" placeholder="Mysore&#10;Coimbatore&#10;Trichy&#10;Madurai" rows="6" style="width:100%;background:var(--input-bg);border:1px solid var(--border);color:var(--text);font-family:var(--font-body);font-size:13px;padding:9px 12px;border-radius:6px;outline:none;resize:vertical"></textarea>
+      </div>
+      <button class="btn btn-primary" style="width:100%" onclick="bulkAddDbs()">⚡ Add All</button>
+    </div>
+    <div id="db-tab-bulkdel" class="tab-panel">
+      <div style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Select to delete</span>
+        <div style="display:flex;gap:6px">
+          <button class="mini-btn" onclick="selectAllManage('dbCheckboxes',true)">All</button>
+          <button class="mini-btn" onclick="selectAllManage('dbCheckboxes',false)">None</button>
+        </div>
+      </div>
+      <div id="dbCheckboxes" style="max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:5px;margin-bottom:12px"></div>
+      <button class="btn btn-danger" style="width:100%" onclick="bulkDeleteDbs()">🗑 Delete Selected</button>
+    </div>
+    <div style="border-top:1px solid var(--border);margin-top:14px;padding-top:12px">
+      <label style="font-size:11px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;display:block;margin-bottom:8px">All Databases <span id="dbs-count" style="color:var(--accent)"></span></label>
+      <div id="dbList" style="max-height:180px;overflow-y:auto;display:flex;flex-direction:column;gap:5px"></div>
+    </div>
+    <div class="modal-actions" style="margin-top:12px">
+      <button class="btn btn-ghost" onclick="closeModal('dbModal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- MANAGE STATUS MODAL -->
+<div class="modal-overlay" id="statusModal">
+  <div class="modal" style="width:500px;max-height:90vh;display:flex;flex-direction:column">
+    <h3>🏷 Manage Statuses</h3>
+    <div class="manage-tabs">
+      <button class="manage-tab active" onclick="switchTab('status','single')">＋ Add One</button>
+      <button class="manage-tab" onclick="switchTab('status','bulk')">⚡ Bulk Add</button>
+      <button class="manage-tab" onclick="switchTab('status','bulkdel')">🗑 Bulk Delete</button>
+    </div>
+    <div id="status-tab-single" class="tab-panel active">
+      <div class="modal-field">
+        <label>Status Key (no spaces, e.g. "review")</label>
+        <input type="text" id="newStatusKey" placeholder="e.g. review" style="width:100%;margin-bottom:8px" onkeydown="if(event.key==='Tab'){event.preventDefault();document.getElementById('newStatusLabel').focus()}" />
+        <label>Display Label (e.g. "In Review")</label>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="newStatusLabel" placeholder="e.g. In Review" style="flex:1" onkeydown="if(event.key==='Enter')addStatus()" />
+          <button class="btn btn-primary" onclick="addStatus()">＋ Add</button>
+        </div>
+      </div>
+    </div>
+    <div id="status-tab-bulk" class="tab-panel">
+      <div class="modal-field">
+        <label>One per line — format: <code style="color:var(--accent)">key: Label</code> &nbsp;(e.g. "review: In Review")</label>
+        <textarea id="bulkStatusInput" placeholder="review: In Review&#10;done: Completed&#10;hold: On Hold" rows="6" style="width:100%;background:var(--input-bg);border:1px solid var(--border);color:var(--text);font-family:var(--font-body);font-size:13px;padding:9px 12px;border-radius:6px;outline:none;resize:vertical"></textarea>
+      </div>
+      <button class="btn btn-primary" style="width:100%" onclick="bulkAddStatuses()">⚡ Add All</button>
+    </div>
+    <div id="status-tab-bulkdel" class="tab-panel">
+      <div style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Select to delete</span>
+        <div style="display:flex;gap:6px">
+          <button class="mini-btn" onclick="selectAllManage('statusCheckboxes',true)">All</button>
+          <button class="mini-btn" onclick="selectAllManage('statusCheckboxes',false)">None</button>
+        </div>
+      </div>
+      <div id="statusCheckboxes" style="max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:5px;margin-bottom:12px"></div>
+      <button class="btn btn-danger" style="width:100%" onclick="bulkDeleteStatuses()">🗑 Delete Selected</button>
+    </div>
+    <div style="border-top:1px solid var(--border);margin-top:14px;padding-top:12px">
+      <label style="font-size:11px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;display:block;margin-bottom:8px">All Statuses <span id="statuses-count" style="color:var(--accent)"></span></label>
+      <div id="statusList" style="max-height:180px;overflow-y:auto;display:flex;flex-direction:column;gap:5px"></div>
+    </div>
+    <div class="modal-actions" style="margin-top:12px">
+      <button class="btn btn-ghost" onclick="closeModal('statusModal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DATA ──
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+let statusOptions = ['otto','pkg','epi','both','bulk'];
+let statusLabels = { otto:'Otto', pkg:'PKG', epi:'Episode', both:'Both', bulk:'Bulk' };
+const DEFAULT_STATUS_OPTIONS = ['otto','pkg','epi','both','bulk'];
+const DEFAULT_STATUS_LABELS  = { otto:'Otto', pkg:'PKG', epi:'Episode', both:'Both', bulk:'Bulk' };
+
+const DEFAULT_NAMES = ['A','B','C','D','E','F','G','H','I','J'];
+const DEFAULT_DATABASES = [
+ "salisbury" , "new england" , "michigan" , "florida" , "virginia" ,
+ "ohio"      , "pennsylvania", "indiana"  , "illinois" , "georgia" ,
+ "north carolina", "new york" , "texas"    , "arizona"  , "washington",
+ "massachusetts", "tennessee"  , "missouri" , "maryland" , "wisconsin",
+];
+
+let names = [];
+let databases = [];
+let rows = [];
+let rowIdCounter = 1;
+let timers = {};
+let runningCount = 0;
+
+// ── LOCAL STORAGE ──
+const LS_ROWS = 'pt_rows';
+const LS_COUNTER = 'pt_counter';
+const LS_NAMES = 'pt_names';
+const LS_DBS = 'pt_databases';
+const LS_STATUSES = 'pt_statuses';
+
+function saveAll() {
+  const saveRows = rows.map(r => ({...r, timerRunning: false}));
+  try {
+    localStorage.setItem(LS_ROWS, JSON.stringify(saveRows));
+    localStorage.setItem(LS_COUNTER, rowIdCounter);
+    localStorage.setItem(LS_NAMES, JSON.stringify(names));
+    localStorage.setItem(LS_DBS, JSON.stringify(databases));
+    localStorage.setItem(LS_STATUSES, JSON.stringify({options: statusOptions, labels: statusLabels}));
+  } catch(e) { console.warn('Save failed', e); }
+}
+
+function loadAll() {
+  try {
+    const savedNames = localStorage.getItem(LS_NAMES);
+    names = savedNames ? JSON.parse(savedNames) : [...DEFAULT_NAMES];
+    const savedDbs = localStorage.getItem(LS_DBS);
+    databases = savedDbs ? JSON.parse(savedDbs) : [...DEFAULT_DATABASES];
+    const savedStatuses = localStorage.getItem(LS_STATUSES);
+    if (savedStatuses) {
+      const s = JSON.parse(savedStatuses);
+      statusOptions = s.options || [...DEFAULT_STATUS_OPTIONS];
+      statusLabels  = s.labels  || {...DEFAULT_STATUS_LABELS};
+    } else {
+      statusOptions = [...DEFAULT_STATUS_OPTIONS];
+      statusLabels  = {...DEFAULT_STATUS_LABELS};
+    }
+    const savedCounter = localStorage.getItem(LS_COUNTER);
+    if (savedCounter) rowIdCounter = parseInt(savedCounter);
+    const savedRows = localStorage.getItem(LS_ROWS);
+    if (savedRows) {
+      rows = JSON.parse(savedRows);
+      return true;
+    }
+  } catch(e) { console.warn('Load failed', e); }
+  names = [...DEFAULT_NAMES];
+  databases = [...DEFAULT_DATABASES];
+  statusOptions = [...DEFAULT_STATUS_OPTIONS];
+  statusLabels  = {...DEFAULT_STATUS_LABELS};
+  return false;
+}
+
+// Auto-save on any data change — debounced
+let saveTimer = null;
+function scheduleSave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveAll, 600);
+}
+
+// ── IST CLOCK ──
+function getIST() {
+  return new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+}
+function toISTString(d) {
+  return d.toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: false });
+}
+function toISTDateString(d) {
+  const ist = new Date(d.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  const y = ist.getFullYear();
+  const m = String(ist.getMonth()+1).padStart(2,'0');
+  const day = String(ist.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function updateClock() {
+  const now = getIST();
+  document.getElementById('clock').textContent = toISTString(now) + ' IST';
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ── ROW DATA MODEL ──
+function createRow(data = {}) {
+  const ist = getIST();
+  return {
+    id: rowIdCounter++,
+    date: data.date || toISTDateString(ist),
+    month: data.month || MONTHS[ist.getMonth()],
+    name: data.name || names[0] || '',
+    episode: data.episode || '',
+    database: data.database || databases[0] || '',
+    startDate: data.startDate || '',
+    endDate: data.endDate || '',
+    status: data.status || 'otto',
+    rate: data.rate || false,
+    lines: data.lines || '',
+    startTime: data.startTime || '',
+    endTime: data.endTime || '',
+    elapsed: data.elapsed || 0,
+    timerRunning: false,
+  };
+}
+
+// ── RENDER ──
+function render() {
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+  rows.forEach((row, idx) => {
+    tbody.appendChild(buildRow(row, idx));
+  });
+  document.getElementById('stat-rows').textContent = rows.length;
+  updateRunningCount();
+}
+
+function buildRow(row, idx) {
+  const tr = document.createElement('tr');
+  tr.dataset.id = row.id;
+
+  // Row number
+  tr.innerHTML = `<td class="row-num">${idx + 1}</td>`;
+
+  // Date (IST)
+  tr.appendChild(makeCell(`
+    <input type="date" class="cell-input" value="${row.date}" onchange="updateRow(${row.id},'date',this.value);syncMonth(${row.id},this.value)">
+  `));
+
+  // Month
+  tr.appendChild(makeCell(`
+    <select class="cell-select" onchange="updateRow(${row.id},'month',this.value)">
+      ${MONTHS.map(m => `<option value="${m}"${row.month===m?' selected':''}>${m}</option>`).join('')}
+    </select>
+  `));
+
+  // Name dropdown
+  tr.appendChild(makeCell(`
+    <select class="cell-select" onchange="updateRow(${row.id},'name',this.value)">
+      ${names.map(n => `<option value="${n}"${row.name===n?' selected':''}>${n}</option>`).join('')}
+    </select>
+  `));
+
+  // Episode (manual)
+  tr.appendChild(makeCell(`
+    <input type="text" class="cell-input" value="${row.episode}" placeholder="Enter episode..." onchange="updateRow(${row.id},'episode',this.value)">
+  `));
+
+  // Database dropdown (35)
+  tr.appendChild(makeCell(`
+    <select class="cell-select" onchange="updateRow(${row.id},'database',this.value)">
+      ${databases.map(d => `<option value="${d}"${row.database===d?' selected':''}>${d}</option>`).join('')}
+    </select>
+  `));
+
+  // Start Date
+  tr.appendChild(makeCell(`
+    <input type="date" class="cell-input" value="${row.startDate}" onchange="updateRow(${row.id},'startDate',this.value)">
+  `));
+
+  // End Date
+  tr.appendChild(makeCell(`
+    <input type="date" class="cell-input" value="${row.endDate}" onchange="updateRow(${row.id},'endDate',this.value)">
+  `));
+
+  // Status
+  const statusBadgeClass = `status-${row.status}`;
+  const statusLabel = statusLabels[row.status] || row.status;
+  tr.appendChild(makeCell(`
+    <select class="cell-select" style="color:inherit" onchange="updateRow(${row.id},'status',this.value);rebuildRow(${row.id})">
+      ${statusOptions.map(s => `<option value="${s}"${row.status===s?' selected':''}>${statusLabels[s]||s}</option>`).join('')}
+    </select>
+  `));
+
+  // Rate (checkbox as pill toggle)
+  tr.appendChild(makeCell(`
+    <div class="rate-wrap">
+      <span class="rate-pill ${row.rate?'yes':'no'}" onclick="toggleRate(${row.id},this)">
+        ${row.rate ? 'Yes' : 'No'}
+      </span>
+    </div>
+  `));
+
+  // Lines (numeric)
+  tr.appendChild(makeCell(`
+    <input type="number" class="cell-input" value="${row.lines}" placeholder="0" min="0" onchange="updateRow(${row.id},'lines',this.value)">
+  `));
+
+  // Timer
+  const isRunning = timers[row.id] && timers[row.id].interval;
+  const elapsed = formatElapsed(row.elapsed);
+  tr.appendChild(makeCell(`
+    <div class="timer-wrap">
+      <button class="timer-btn ${isRunning ? 'active' : ''}" id="tbtn-${row.id}" onclick="toggleTimer(${row.id})" title="${isRunning ? 'Stop' : 'Start'}">
+        ${isRunning ? '⏹' : '▶'}
+      </button>
+      <div class="timer-display ${isRunning ? 'running' : ''}" id="tdisplay-${row.id}">${elapsed}</div>
+      <button class="timer-btn" onclick="resetTimer(${row.id})" title="Reset" style="font-size:10px">↺</button>
+    </div>
+  `));
+
+  // Start/End Time display
+  tr.appendChild(makeCell(`
+    <div class="time-cell" style="flex-direction:column;gap:2px">
+      <div class="time-value" id="tstart-${row.id}">${row.startTime || '--:--:--'}</div>
+      <div class="time-value" id="tend-${row.id}" style="color:${row.endTime?'var(--orange)':'var(--muted)'}">${row.endTime || '--:--:--'}</div>
+    </div>
+  `));
+
+  // Actions
+  tr.appendChild(makeCell(`
+    <div class="action-btns">
+      <button class="icon-btn copy" onclick="duplicateRow(${row.id})" title="Duplicate">⧉</button>
+      <button class="icon-btn" onclick="deleteRow(${row.id})" title="Delete">✕</button>
+    </div>
+  `));
+
+  return tr;
+}
+
+function makeCell(html) {
+  const td = document.createElement('td');
+  td.innerHTML = html;
+  return td;
+}
+
+// ── ROW OPERATIONS ──
+function addRow() {
+  const row = createRow();
+  rows.push(row);
+  render();
+  scheduleSave();
+  showToast('Row added');
+}
+
+function deleteRow(id) {
+  if (timers[id]) { clearInterval(timers[id].interval); delete timers[id]; }
+  rows = rows.filter(r => r.id !== id);
+  render();
+  scheduleSave();
+}
+
+function duplicateRow(id) {
+  const orig = rows.find(r => r.id === id);
+  if (!orig) return;
+  const copy = createRow({...orig});
+  copy.timerRunning = false;
+  copy.elapsed = 0;
+  copy.startTime = '';
+  copy.endTime = '';
+  const idx = rows.findIndex(r => r.id === id);
+  rows.splice(idx + 1, 0, copy);
+  render();
+  scheduleSave();
+  showToast('Row duplicated');
+}
+
+function rebuildRow(id) { render(); }
+
+function syncMonth(id, dateVal) {
+  if (!dateVal) return;
+  const row = rows.find(r => r.id === id);
+  if (row) {
+    const m = parseInt(dateVal.split('-')[1]) - 1;
+    row.month = MONTHS[m];
+    scheduleSave();
+    render();
+  }
+}
+
+function toggleRate(id, el) {
+  const row = rows.find(r => r.id === id);
+  if (!row) return;
+  row.rate = !row.rate;
+  el.textContent = row.rate ? 'Yes' : 'No';
+  el.className = 'rate-pill ' + (row.rate ? 'yes' : 'no');
+  scheduleSave();
+}
+
+// ── TIMER ──
+function formatElapsed(ms) {
+  const s = Math.floor(ms / 1000);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+
+function toggleTimer(id) {
+  const row = rows.find(r => r.id === id);
+  if (!row) return;
+
+  if (timers[id] && timers[id].interval) {
+    // STOP
+    clearInterval(timers[id].interval);
+    row.elapsed = timers[id].elapsed;
+    timers[id].interval = null;
+    row.endTime = toISTString(getIST());
+    runningCount = Math.max(0, runningCount - 1);
+    updateRunningCount();
+    scheduleSave();
+    const btn = document.getElementById(`tbtn-${id}`);
+    const disp = document.getElementById(`tdisplay-${id}`);
+    const tendEl = document.getElementById(`tend-${id}`);
+    if (btn) { btn.textContent = '▶'; btn.classList.remove('active'); }
+    if (disp) disp.classList.remove('running');
+    if (tendEl) { tendEl.textContent = row.endTime; tendEl.style.color = 'var(--orange)'; }
+  } else {
+    // START
+    if (!timers[id]) timers[id] = { elapsed: row.elapsed || 0 };
+    const startMs = Date.now() - timers[id].elapsed;
+    row.startTime = toISTString(getIST());
+    row.endTime = '';
+    runningCount++;
+    updateRunningCount();
+
+    const btn = document.getElementById(`tbtn-${id}`);
+    const disp = document.getElementById(`tdisplay-${id}`);
+    const tstartEl = document.getElementById(`tstart-${id}`);
+    const tendEl = document.getElementById(`tend-${id}`);
+    if (btn) { btn.textContent = '⏹'; btn.classList.add('active'); }
+    if (disp) disp.classList.add('running');
+    if (tstartEl) tstartEl.textContent = row.startTime;
+    if (tendEl) { tendEl.textContent = '--:--:--'; tendEl.style.color = 'var(--muted)'; }
+
+    timers[id].interval = setInterval(() => {
+      timers[id].elapsed = Date.now() - startMs;
+      const disp2 = document.getElementById(`tdisplay-${id}`);
+      if (disp2) disp2.textContent = formatElapsed(timers[id].elapsed);
+    }, 1000);
+  }
+}
+
+function resetTimer(id) {
+  if (timers[id] && timers[id].interval) {
+    clearInterval(timers[id].interval);
+    runningCount = Math.max(0, runningCount - 1);
+    updateRunningCount();
+  }
+  timers[id] = { elapsed: 0 };
+  const row = rows.find(r => r.id === id);
+  if (row) { row.elapsed = 0; row.startTime = ''; row.endTime = ''; }
+  const disp = document.getElementById(`tdisplay-${id}`);
+  const btn = document.getElementById(`tbtn-${id}`);
+  if (disp) { disp.textContent = '00:00:00'; disp.classList.remove('running'); }
+  if (btn) { btn.textContent = '▶'; btn.classList.remove('active'); }
+}
+
+function updateRunningCount() {
+  document.getElementById('stat-running').textContent = runningCount;
+}
+
+// ── TAB SWITCHING ──
+function switchTab(group, tab) {
+  ['single','bulk','bulkdel'].forEach(t => {
+    const panel = document.getElementById(`${group}-tab-${t}`);
+    if (panel) panel.classList.toggle('active', t === tab);
+  });
+  const modalId = group === 'name' ? 'nameModal' : group === 'db' ? 'dbModal' : 'statusModal';
+  document.querySelectorAll(`#${modalId} .manage-tab`).forEach((btn, i) => {
+    btn.classList.toggle('active', ['single','bulk','bulkdel'][i] === tab);
+  });
+  if (tab === 'bulkdel') {
+    if (group === 'name')   renderNameCheckboxes();
+    if (group === 'db')     renderDbCheckboxes();
+    if (group === 'status') renderStatusCheckboxes();
+  }
+}
+
+function selectAllManage(containerId, val) {
+  document.querySelectorAll(`#${containerId} input[type=checkbox]`).forEach(cb => {
+    cb.checked = val;
+    cb.closest('.check-item').classList.toggle('checked', val);
+  });
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// ── NAMES ──
+function openNameModal() {
+  renderNamesList(); renderNameCheckboxes();
+  document.getElementById('names-count').textContent = `(${names.length})`;
+  switchTab('name','single');
+  document.getElementById('nameModal').classList.add('open');
+  setTimeout(() => document.getElementById('newNameInput').focus(), 50);
+}
+
+function renderNamesList() {
+  const c = document.getElementById('namesList');
+  if (document.getElementById('names-count')) document.getElementById('names-count').textContent = `(${names.length})`;
+  c.innerHTML = '';
+  names.forEach((name, idx) => {
+    const div = document.createElement('div');
+    div.className = 'manage-item';
+    div.innerHTML = `
+      <div class="manage-item-name"><input type="text" value="${name}" onchange="renameName(${idx},this.value)" /></div>
+      <div class="manage-item-actions"><button class="mini-btn del" onclick="deleteName(${idx})">&#x2715;</button></div>`;
+    c.appendChild(div);
+  });
+}
+
+function renderNameCheckboxes() {
+  const c = document.getElementById('nameCheckboxes');
+  c.innerHTML = '';
+  names.forEach((name, idx) => {
+    const div = document.createElement('div');
+    div.className = 'check-item';
+    div.innerHTML = `<input type="checkbox" id="nchk-${idx}" onchange="this.closest('.check-item').classList.toggle('checked',this.checked)"><label for="nchk-${idx}">${name}</label>`;
+    c.appendChild(div);
+  });
+}
+
+function addName() {
+  const val = document.getElementById('newNameInput').value.trim();
+  if (!val) return;
+  if (!names.includes(val)) { names.push(val); scheduleSave(); render(); showToast(`"${val}" added`); }
+  document.getElementById('newNameInput').value = '';
+  renderNamesList(); renderNameCheckboxes();
+  if (document.getElementById('names-count')) document.getElementById('names-count').textContent = `(${names.length})`;
+}
+
+function bulkAddNames() {
+  const lines = document.getElementById('bulkNameInput').value.split('\n').map(l=>l.trim()).filter(Boolean);
+  let added = 0;
+  lines.forEach(v => { if (v && !names.includes(v)) { names.push(v); added++; } });
+  if (added) { scheduleSave(); render(); showToast(`${added} name(s) added`); }
+  document.getElementById('bulkNameInput').value = '';
+  renderNamesList(); renderNameCheckboxes();
+  if (document.getElementById('names-count')) document.getElementById('names-count').textContent = `(${names.length})`;
+}
+
+function bulkDeleteNames() {
+  const checked = [...document.querySelectorAll('#nameCheckboxes input:checked')].map(cb => parseInt(cb.id.replace('nchk-','')));
+  if (!checked.length) { showToast('Select at least one name'); return; }
+  const toDelete = checked.map(i => names[i]);
+  if (names.length - toDelete.length < 1) { showToast('Must keep at least one name'); return; }
+  if (!confirm(`Delete ${toDelete.length} name(s)?`)) return;
+  names = names.filter(n => !toDelete.includes(n));
+  scheduleSave(); render(); renderNamesList(); renderNameCheckboxes();
+  if (document.getElementById('names-count')) document.getElementById('names-count').textContent = `(${names.length})`;
+  showToast(`${toDelete.length} name(s) deleted`);
+}
+
+function renameName(idx, newVal) {
+  const t = newVal.trim();
+  if (!t) return;
+  const old = names[idx];
+  if (old === t) return;
+  names[idx] = t;
+  rows.forEach(r => { if (r.name === old) r.name = t; });
+  scheduleSave(); render();
+}
+
+function deleteName(idx) {
+  if (names.length <= 1) { showToast('Need at least one name'); return; }
+  const n = names[idx];
+  if (!confirm(`Delete "${n}"?`)) return;
+  names.splice(idx, 1);
+  scheduleSave(); render(); renderNamesList(); renderNameCheckboxes();
+  if (document.getElementById('names-count')) document.getElementById('names-count').textContent = `(${names.length})`;
+  showToast(`"${n}" deleted`);
+}
+
+// ── DATABASES ──
+function openDbModal() {
+  renderDbList(); renderDbCheckboxes();
+  document.getElementById('dbs-count').textContent = `(${databases.length})`;
+  switchTab('db','single');
+  document.getElementById('dbModal').classList.add('open');
+  setTimeout(() => document.getElementById('newDbInput').focus(), 50);
+}
+
+function renderDbList() {
+  const c = document.getElementById('dbList');
+  if (document.getElementById('dbs-count')) document.getElementById('dbs-count').textContent = `(${databases.length})`;
+  c.innerHTML = '';
+  databases.forEach((db, idx) => {
+    const div = document.createElement('div');
+    div.className = 'manage-item';
+    div.innerHTML = `
+      <div class="manage-item-name"><input type="text" value="${db}" onchange="renameDb(${idx},this.value)" /></div>
+      <div class="manage-item-actions"><button class="mini-btn del" onclick="deleteDb(${idx})">&#x2715;</button></div>`;
+    c.appendChild(div);
+  });
+}
+
+function renderDbCheckboxes() {
+  const c = document.getElementById('dbCheckboxes');
+  c.innerHTML = '';
+  databases.forEach((db, idx) => {
+    const div = document.createElement('div');
+    div.className = 'check-item';
+    div.innerHTML = `<input type="checkbox" id="dbchk-${idx}" onchange="this.closest('.check-item').classList.toggle('checked',this.checked)"><label for="dbchk-${idx}">${db}</label>`;
+    c.appendChild(div);
+  });
+}
+
+function addDatabase() {
+  const val = document.getElementById('newDbInput').value.trim();
+  if (!val) return;
+  if (!databases.includes(val)) { databases.push(val); scheduleSave(); render(); showToast(`"${val}" added`); }
+  document.getElementById('newDbInput').value = '';
+  renderDbList(); renderDbCheckboxes();
+  if (document.getElementById('dbs-count')) document.getElementById('dbs-count').textContent = `(${databases.length})`;
+}
+
+function bulkAddDbs() {
+  const lines = document.getElementById('bulkDbInput').value.split('\n').map(l=>l.trim()).filter(Boolean);
+  let added = 0;
+  lines.forEach(v => { if (v && !databases.includes(v)) { databases.push(v); added++; } });
+  if (added) { scheduleSave(); render(); showToast(`${added} database(s) added`); }
+  document.getElementById('bulkDbInput').value = '';
+  renderDbList(); renderDbCheckboxes();
+  if (document.getElementById('dbs-count')) document.getElementById('dbs-count').textContent = `(${databases.length})`;
+}
+
+function bulkDeleteDbs() {
+  const checked = [...document.querySelectorAll('#dbCheckboxes input:checked')].map(cb => parseInt(cb.id.replace('dbchk-','')));
+  if (!checked.length) { showToast('Select at least one database'); return; }
+  const toDelete = checked.map(i => databases[i]);
+  if (databases.length - toDelete.length < 1) { showToast('Must keep at least one database'); return; }
+  if (!confirm(`Delete ${toDelete.length} database(s)?`)) return;
+  databases = databases.filter(d => !toDelete.includes(d));
+  scheduleSave(); render(); renderDbList(); renderDbCheckboxes();
+  if (document.getElementById('dbs-count')) document.getElementById('dbs-count').textContent = `(${databases.length})`;
+  showToast(`${toDelete.length} database(s) deleted`);
+}
+
+function renameDb(idx, newVal) {
+  const t = newVal.trim();
+  if (!t) return;
+  const old = databases[idx];
+  if (old === t) return;
+  databases[idx] = t;
+  rows.forEach(r => { if (r.database === old) r.database = t; });
+  scheduleSave(); render();
+}
+
+function deleteDb(idx) {
+  if (databases.length <= 1) { showToast('Need at least one database'); return; }
+  const d = databases[idx];
+  if (!confirm(`Delete "${d}"?`)) return;
+  databases.splice(idx, 1);
+  scheduleSave(); render(); renderDbList(); renderDbCheckboxes();
+  if (document.getElementById('dbs-count')) document.getElementById('dbs-count').textContent = `(${databases.length})`;
+  showToast(`"${d}" deleted`);
+}
+
+// ── STATUSES ──
+function openStatusModal() {
+  renderStatusList(); renderStatusCheckboxes();
+  document.getElementById('statuses-count').textContent = `(${statusOptions.length})`;
+  switchTab('status','single');
+  document.getElementById('statusModal').classList.add('open');
+  setTimeout(() => document.getElementById('newStatusKey').focus(), 50);
+}
+
+function renderStatusList() {
+  const c = document.getElementById('statusList');
+  if (document.getElementById('statuses-count')) document.getElementById('statuses-count').textContent = `(${statusOptions.length})`;
+  c.innerHTML = '';
+  statusOptions.forEach((key, idx) => {
+    const lbl = statusLabels[key] || key;
+    const div = document.createElement('div');
+    div.className = 'manage-item';
+    div.innerHTML = `
+      <div class="manage-item-name" style="display:flex;gap:8px;flex:1">
+        <input type="text" value="${key}" placeholder="key" style="width:90px;flex-shrink:0" onchange="renameStatusKey(${idx},this.value)" />
+        <input type="text" value="${lbl}" placeholder="label" style="flex:1" onchange="renameStatusLabel('${key}',this.value)" />
+      </div>
+      <div class="manage-item-actions"><button class="mini-btn del" onclick="deleteStatus('${key}')">&#x2715;</button></div>`;
+    c.appendChild(div);
+  });
+}
+
+function renderStatusCheckboxes() {
+  const c = document.getElementById('statusCheckboxes');
+  c.innerHTML = '';
+  statusOptions.forEach((key, idx) => {
+    const div = document.createElement('div');
+    div.className = 'check-item';
+    div.innerHTML = `<input type="checkbox" id="schk-${idx}" onchange="this.closest('.check-item').classList.toggle('checked',this.checked)"><label for="schk-${idx}">${statusLabels[key]||key} <span style="color:var(--muted);font-size:11px">(${key})</span></label>`;
+    c.appendChild(div);
+  });
+}
+
+function addStatus() {
+  const key = document.getElementById('newStatusKey').value.trim().toLowerCase().replace(/\s+/g,'_');
+  const label = document.getElementById('newStatusLabel').value.trim();
+  if (!key || !label) { showToast('Key and label are both required'); return; }
+  if (!statusOptions.includes(key)) {
+    statusOptions.push(key);
+    statusLabels[key] = label;
+    scheduleSave(); render(); showToast(`Status "${label}" added`);
+  }
+  document.getElementById('newStatusKey').value = '';
+  document.getElementById('newStatusLabel').value = '';
+  renderStatusList(); renderStatusCheckboxes();
+  if (document.getElementById('statuses-count')) document.getElementById('statuses-count').textContent = `(${statusOptions.length})`;
+}
+
+function bulkAddStatuses() {
+  const lines = document.getElementById('bulkStatusInput').value.split('\n').map(l=>l.trim()).filter(Boolean);
+  let added = 0;
+  lines.forEach(line => {
+    const colonIdx = line.indexOf(':');
+    if (colonIdx < 0) return;
+    const key = line.slice(0, colonIdx).trim().toLowerCase().replace(/\s+/g,'_');
+    const lbl = line.slice(colonIdx + 1).trim();
+    if (key && lbl && !statusOptions.includes(key)) {
+      statusOptions.push(key);
+      statusLabels[key] = lbl;
+      added++;
+    }
+  });
+  if (added) { scheduleSave(); render(); showToast(`${added} status(es) added`); }
+  document.getElementById('bulkStatusInput').value = '';
+  renderStatusList(); renderStatusCheckboxes();
+  if (document.getElementById('statuses-count')) document.getElementById('statuses-count').textContent = `(${statusOptions.length})`;
+}
+
+function bulkDeleteStatuses() {
+  const checked = [...document.querySelectorAll('#statusCheckboxes input:checked')].map(cb => parseInt(cb.id.replace('schk-','')));
+  if (!checked.length) { showToast('Select at least one status'); return; }
+  const toDelete = checked.map(i => statusOptions[i]);
+  if (statusOptions.length - toDelete.length < 1) { showToast('Must keep at least one status'); return; }
+  if (!confirm(`Delete ${toDelete.length} status(es)?`)) return;
+  toDelete.forEach(k => { statusOptions = statusOptions.filter(s => s !== k); delete statusLabels[k]; });
+  scheduleSave(); render(); renderStatusList(); renderStatusCheckboxes();
+  if (document.getElementById('statuses-count')) document.getElementById('statuses-count').textContent = `(${statusOptions.length})`;
+  showToast(`${toDelete.length} status(es) deleted`);
+}
+
+function renameStatusKey(idx, newKey) {
+  const t = newKey.trim().toLowerCase().replace(/\s+/g,'_');
+  if (!t) return;
+  const old = statusOptions[idx];
+  if (old === t || statusOptions.includes(t)) return;
+  statusOptions[idx] = t;
+  statusLabels[t] = statusLabels[old];
+  delete statusLabels[old];
+  rows.forEach(r => { if (r.status === old) r.status = t; });
+  scheduleSave(); render();
+}
+
+function renameStatusLabel(key, newLabel) {
+  const t = newLabel.trim();
+  if (!t) return;
+  statusLabels[key] = t;
+  scheduleSave(); render();
+}
+
+function deleteStatus(key) {
+  if (statusOptions.length <= 1) { showToast('Must keep at least one status'); return; }
+  if (!confirm(`Delete status "${statusLabels[key]||key}"?`)) return;
+  statusOptions = statusOptions.filter(s => s !== key);
+  delete statusLabels[key];
+  scheduleSave(); render(); renderStatusList(); renderStatusCheckboxes();
+  if (document.getElementById('statuses-count')) document.getElementById('statuses-count').textContent = `(${statusOptions.length})`;
+  showToast('Status deleted');
+}
+
+// ── EXPORT ──
+function exportCSV() {
+  const headers = ['#','Date (IST)','Month','Name','Episode Name','Database','Start Date','End Date','Status','Rate','Lines','Start Time','End Time','Elapsed'];
+  const csvRows = [headers.join(',')];
+  rows.forEach((row, idx) => {
+    csvRows.push([
+      idx+1, row.date, row.month, row.name,
+      `"${row.episode}"`, row.database, row.startDate, row.endDate,
+      row.status, row.rate ? 'Yes' : 'No', row.lines,
+      row.startTime, row.endTime, formatElapsed(row.elapsed)
+    ].join(','));
+  });
+  const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `production_tracker_${toISTDateString(getIST())}.csv`;
+  a.click();
+  showToast('Exported to CSV');
+}
+
+function clearAll() {
+  if (!confirm('Clear all rows? This cannot be undone.')) return;
+  Object.values(timers).forEach(t => { if (t.interval) clearInterval(t.interval); });
+  timers = {};
+  rows = [];
+  runningCount = 0;
+  scheduleSave();
+  render();
+  showToast('All rows cleared');
+}
+
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = '✓ ' + msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ── KEYBOARD SHORTCUTS ──
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') addRow();
+});
+
+// ── MODAL CLOSE ON BACKDROP ──
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+});
+
+// ── INIT — load from localStorage or use demo data ──
+const hasData = loadAll();
+if (!hasData) {
+  const demoData = [
+    { name:'A', episode:'hjfgjfg', database:'Chennai', status:'otto', rate:true, lines:'12' },
+    { name:'B', episode:'fgjfgj', database:'Mumbai', status:'pkg', rate:false, lines:'' },
+    { name:'C', episode:'fgjfgj', database:'Delhi', status:'epi', rate:false, lines:'3' },
+    { name:'A', episode:'mvb', database:'Bangalore', status:'both', rate:false, lines:'' },
+    { name:'B', episode:'fgjfgj', database:'Hyderabad', status:'bulk', rate:false, lines:'5' },
+  ];
+  demoData.forEach(d => rows.push(createRow(d)));
+}
+render();
+if (hasData) showToast('Data restored from last session');
+</script>
+</body>
+</html>
