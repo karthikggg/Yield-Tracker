@@ -501,7 +501,7 @@ function formatISTTime(d) {
 }
 function formatISTDate(d) {
   const ist = new Date(d.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
-  return `${String(ist.getDate()).padStart(2,'0')}/${String(ist.getMonth()+1).padStart(2,'0')}/${ist.getFullYear()}`;
+  return `${ist.getDate()}-${MONTHS[ist.getMonth()]}-${ist.getFullYear()}`;
 }
 function formatISTDateInput(d) {
   const ist = new Date(d.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
