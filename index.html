@@ -3,482 +3,283 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Production Tracker — IST</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>Operations Tracker — IST</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0d0f14;
-    --surface: #161a23;
-    --surface2: #1e2330;
-    --border: #2a2f3d;
-    --accent: #4f8ef7;
-    --accent2: #a78bfa;
-    --green: #34d399;
-    --red: #f87171;
-    --yellow: #fbbf24;
-    --orange: #fb923c;
-    --text: #e8eaf0;
-    --muted: #6b7280;
-    --input-bg: #1a1f2e;
-    --radius: 8px;
-    --font-head: 'Syne', sans-serif;
-    --font-body: 'DM Sans', sans-serif;
-    --font-mono: 'DM Mono', monospace;
-  }
+:root {
+  --bg: #070b12;
+  --surface: #0d1520;
+  --surface2: #121d2e;
+  --surface3: #172338;
+  --border: #1a2840;
+  --border2: #223352;
+  --amber: #f59e0b;
+  --amber-glow: rgba(245,158,11,0.18);
+  --amber-dim: rgba(245,158,11,0.08);
+  --sky: #38bdf8;
+  --sky-glow: rgba(56,189,248,0.12);
+  --green: #22d3a0;
+  --green-dim: rgba(34,211,160,0.12);
+  --red: #f87171;
+  --red-dim: rgba(248,113,113,0.12);
+  --purple: #a78bfa;
+  --text: #dde6f0;
+  --text2: #94a3b8;
+  --muted: #4a5c72;
+  --muted2: #2e3e52;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-ui: 'Outfit', sans-serif;
+  --font-display: 'Syne', sans-serif;
+  --radius: 6px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 14px; }
+body { font-family: var(--font-ui); background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+/* HEADER */
+.header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border2);
+  padding: 0 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 56px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+.header-left { display: flex; align-items: center; gap: 16px; }
+.logo { font-family: var(--font-display); font-size: 18px; font-weight: 800; color: var(--amber); letter-spacing: 1px; }
+.logo span { color: var(--sky); }
+.ist-clock { font-family: var(--font-mono); font-size: 13px; color: var(--green); background: var(--green-dim); padding: 4px 10px; border-radius: 99px; border: 1px solid rgba(34,211,160,0.2); }
+.header-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-body);
-    font-size: 13px;
-    min-height: 100vh;
-  }
+/* BUTTONS */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-ui); font-size: 12px; font-weight: 600;
+  padding: 6px 12px; border-radius: var(--radius); border: 1px solid transparent;
+  cursor: pointer; transition: all 0.15s; white-space: nowrap; letter-spacing: 0.3px;
+}
+.btn:active { transform: scale(0.97); }
+.btn-amber { background: var(--amber); color: #000; border-color: var(--amber); }
+.btn-amber:hover { background: #fbbf24; }
+.btn-outline { background: transparent; color: var(--text2); border-color: var(--border2); }
+.btn-outline:hover { background: var(--surface2); border-color: var(--border); color: var(--text); }
+.btn-sky { background: var(--sky-glow); color: var(--sky); border-color: rgba(56,189,248,0.3); }
+.btn-sky:hover { background: rgba(56,189,248,0.2); }
+.btn-red { background: var(--red-dim); color: var(--red); border-color: rgba(248,113,113,0.25); }
+.btn-red:hover { background: rgba(248,113,113,0.2); }
+.btn-green { background: var(--green-dim); color: var(--green); border-color: rgba(34,211,160,0.25); }
+.btn-green:hover { background: rgba(34,211,160,0.2); }
+.btn-purple { background: rgba(167,139,250,0.1); color: var(--purple); border-color: rgba(167,139,250,0.25); }
+.btn-purple:hover { background: rgba(167,139,250,0.2); }
+.btn-sm { padding: 4px 8px; font-size: 11px; }
+.btn-icon { width: 26px; height: 26px; padding: 0; justify-content: center; }
 
-  /* ── HEADER ── */
-  .header {
-    background: linear-gradient(135deg, #0d0f14 0%, #161a23 100%);
-    border-bottom: 1px solid var(--border);
-    padding: 16px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    backdrop-filter: blur(12px);
-  }
-  .header-left { display: flex; align-items: center; gap: 14px; }
-  .logo {
-    width: 36px; height: 36px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--font-head);
-    font-weight: 800; font-size: 16px; color: #fff;
-  }
-  .title { font-family: var(--font-head); font-weight: 700; font-size: 18px; letter-spacing: -0.5px; }
-  .title span { color: var(--accent); }
-  .ist-badge {
-    background: rgba(79,142,247,0.12);
-    border: 1px solid rgba(79,142,247,0.3);
-    color: var(--accent);
-    font-family: var(--font-mono);
-    font-size: 11px;
-    padding: 3px 9px;
-    border-radius: 20px;
-    letter-spacing: 0.5px;
-  }
-  .header-right { display: flex; align-items: center; gap: 10px; }
-  .ist-clock {
-    font-family: var(--font-mono);
-    font-size: 14px;
-    color: var(--green);
-    background: rgba(52,211,153,0.08);
-    border: 1px solid rgba(52,211,153,0.2);
-    padding: 6px 14px;
-    border-radius: 6px;
-  }
+/* TOOLBAR */
+.toolbar {
+  position: fixed; top: 56px; left: 0; right: 0; z-index: 190;
+  padding: 10px 20px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  height: 46px;
+}
+.toolbar-sep { width: 1px; height: 22px; background: var(--border2); margin: 0 4px; }
 
-  /* ── TOOLBAR ── */
-  .toolbar {
-    padding: 12px 24px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-  .btn {
-    padding: 7px 16px;
-    border-radius: var(--radius);
-    border: none;
-    cursor: pointer;
-    font-family: var(--font-body);
-    font-size: 12px;
-    font-weight: 500;
-    display: flex; align-items: center; gap: 6px;
-    transition: all 0.15s;
-  }
-  .btn-primary { background: var(--accent); color: #fff; }
-  .btn-primary:hover { background: #3d7de8; }
-  .btn-success { background: var(--green); color: #0d0f14; }
-  .btn-success:hover { background: #2fbe8c; }
-  .btn-danger { background: var(--red); color: #fff; }
-  .btn-danger:hover { background: #e55a5a; }
-  .btn-ghost {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text);
-  }
-  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
-  .btn-purple { background: var(--accent2); color: #fff; }
-  .btn-purple:hover { background: #9171e8; }
+/* TABLE WRAPPER */
+.table-wrapper {
+  position: fixed;
+  top: 102px; left: 0; right: 0; bottom: 0;
+  overflow: auto;
+  padding: 0 20px 20px;
+}
+.table-scroll { width: 100%; }
+table {
+  width: 100%; border-collapse: collapse;
+  font-size: 12.5px;
+  min-width: 1600px;
+}
+thead th {
+  position: sticky; top: 0; z-index: 10;
+  background: var(--surface);
+  font-family: var(--font-mono); font-size: 10.5px; font-weight: 500;
+  color: var(--text2); letter-spacing: 0.5px; text-transform: uppercase;
+  padding: 10px 8px; text-align: left;
+  border-bottom: 2px solid var(--amber-glow);
+  border-right: 1px solid var(--border);
+  white-space: nowrap;
+}
+thead th:first-child { border-left: 1px solid var(--border); min-width: 40px; text-align: center; }
+tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+}
+tbody tr:hover { background: var(--surface2); }
+tbody tr:last-child { border-bottom: none; }
+tbody td {
+  padding: 5px 6px; vertical-align: middle;
+  border-right: 1px solid var(--border);
+  font-family: var(--font-mono); font-size: 12px;
+}
+tbody td:first-child { border-left: 1px solid var(--border); text-align: center; color: var(--muted); font-size: 11px; }
+.empty-cell { color: var(--muted); }
 
-  .sep { width: 1px; height: 28px; background: var(--border); }
+/* INPUTS in TABLE */
+.cell-input, .cell-select {
+  width: 100%; background: transparent; border: none; outline: none;
+  color: var(--text); font-family: var(--font-mono); font-size: 12px;
+  padding: 2px 4px; border-radius: 3px;
+  transition: background 0.15s;
+}
+.cell-input:focus, .cell-select:focus { background: var(--surface3); outline: 1px solid var(--amber-glow); }
+.cell-select { cursor: pointer; }
+.cell-select option { background: var(--surface2); color: var(--text); }
 
-  .stats-bar {
-    margin-left: auto;
-    display: flex; gap: 16px;
-  }
-  .stat-chip {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--muted);
-  }
-  .stat-chip strong { color: var(--text); }
+/* DATE INPUT */
+input[type="date"].cell-input { color-scheme: dark; }
+input[type="number"].cell-input { -moz-appearance: textfield; }
+input[type="number"].cell-input::-webkit-inner-spin-button { -webkit-appearance: none; }
 
-  /* ── MAIN TABLE CONTAINER ── */
-  .table-wrap {
-    overflow-x: auto;
-    padding: 20px 24px;
-    min-height: calc(100vh - 130px);
-  }
+/* TIMER CELL */
+.timer-cell { display: flex; align-items: center; gap: 4px; min-width: 160px; }
+.timer-display { font-family: var(--font-mono); font-size: 11.5px; color: var(--sky); min-width: 52px; }
+.timer-display.running { color: var(--green); animation: pulse-text 1.5s infinite; }
+.timer-display.paused { color: var(--amber); }
+@keyframes pulse-text { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+.timer-btn {
+  width: 22px; height: 22px; border-radius: 4px; border: 1px solid transparent;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 10px; transition: all 0.15s; flex-shrink: 0;
+}
+.timer-play { background: var(--green-dim); color: var(--green); border-color: rgba(34,211,160,0.3); }
+.timer-play:hover { background: rgba(34,211,160,0.25); }
+.timer-pause { background: var(--amber-dim); color: var(--amber); border-color: rgba(245,158,11,0.3); }
+.timer-pause:hover { background: rgba(245,158,11,0.2); }
+.timer-stop { background: var(--red-dim); color: var(--red); border-color: rgba(248,113,113,0.25); }
+.timer-stop:hover { background: rgba(248,113,113,0.2); }
+.timer-reset { background: var(--surface3); color: var(--muted); border-color: var(--border); }
+.timer-reset:hover { background: var(--border2); color: var(--text2); }
 
-  table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    min-width: 1500px;
-  }
+/* STATUS BADGE */
+.status-badge {
+  font-size: 10.5px; font-family: var(--font-mono);
+  padding: 2px 7px; border-radius: 99px; white-space: nowrap;
+}
+.badge-blue { background: rgba(56,189,248,0.1); color: var(--sky); border: 1px solid rgba(56,189,248,0.25); }
+.badge-green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,211,160,0.25); }
+.badge-amber { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(245,158,11,0.25); }
+.badge-purple { background: rgba(167,139,250,0.1); color: var(--purple); border: 1px solid rgba(167,139,250,0.25); }
+.badge-red { background: var(--red-dim); color: var(--red); border: 1px solid rgba(248,113,113,0.25); }
 
-  thead th {
-    background: var(--surface2);
-    color: var(--muted);
-    font-family: var(--font-mono);
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    padding: 10px 12px;
-    text-align: left;
-    border-bottom: 1px solid var(--border);
-    border-right: 1px solid var(--border);
-    white-space: nowrap;
-    user-select: none;
-  }
-  thead th:first-child { border-radius: 8px 0 0 0; border-left: 1px solid var(--border); border-top: 1px solid var(--border); }
-  thead th:last-child { border-radius: 0 8px 0 0; border-top: 1px solid var(--border); }
-  thead th.col-num { width: 44px; text-align: center; }
-  thead th.col-actions { width: 60px; text-align: center; }
+/* RATE CELL */
+.rate-yes { color: var(--green); font-weight: 600; }
+.rate-no { color: var(--red); font-weight: 600; }
 
-  tbody tr {
-    transition: background 0.12s;
-  }
-  tbody tr:hover { background: rgba(255,255,255,0.025); }
-  tbody tr.selected { background: rgba(79,142,247,0.08); }
+/* ACTIONS */
+.row-actions { display: flex; gap: 4px; justify-content: center; }
 
-  tbody td {
-    padding: 6px 8px;
-    border-bottom: 1px solid rgba(42,47,61,0.7);
-    border-right: 1px solid rgba(42,47,61,0.5);
-    vertical-align: middle;
-  }
-  tbody td:first-child { border-left: 1px solid rgba(42,47,61,0.7); }
-  tbody tr:last-child td:first-child { border-radius: 0 0 0 8px; }
-  tbody tr:last-child td:last-child { border-radius: 0 0 8px 0; }
+/* MODAL */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.modal-overlay.active { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 10px; padding: 24px; min-width: 420px; max-width: 560px; width: 90%;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+  transform: translateY(12px); transition: transform 0.2s;
+}
+.modal-overlay.active .modal { transform: translateY(0); }
+.modal-title { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
+.modal-subtitle { font-size: 12px; color: var(--text2); margin-bottom: 12px; margin-top: -10px; }
+.modal-textarea {
+  width: 100%; background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: var(--radius); color: var(--text); font-family: var(--font-mono);
+  font-size: 12.5px; padding: 10px 12px; min-height: 140px; resize: vertical; outline: none;
+}
+.modal-textarea:focus { border-color: var(--amber); }
+.modal-list { max-height: 260px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+.modal-list-item {
+  display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+  background: var(--surface2); border-radius: var(--radius);
+  cursor: pointer; transition: background 0.1s;
+}
+.modal-list-item:hover { background: var(--surface3); }
+.modal-list-item input[type="checkbox"] { accent-color: var(--amber); width: 14px; height: 14px; cursor: pointer; }
+.modal-list-item label { font-family: var(--font-mono); font-size: 12.5px; cursor: pointer; flex: 1; }
+.modal-actions { display: flex; gap: 8px; margin-top: 16px; justify-content: flex-end; }
+.modal-divider { height: 1px; background: var(--border); margin: 14px 0; }
 
-  .row-num {
-    text-align: center;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    color: var(--muted);
-    width: 44px;
-  }
+/* TOAST */
+.toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 2000; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+.toast {
+  background: var(--surface); border: 1px solid var(--border2);
+  padding: 10px 16px; border-radius: var(--radius);
+  font-size: 13px; font-weight: 500; color: var(--text);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  animation: slideIn 0.2s ease, fadeOut 0.3s ease 2.2s forwards;
+  pointer-events: all; min-width: 220px;
+}
+.toast.success { border-left: 3px solid var(--green); }
+.toast.error { border-left: 3px solid var(--red); }
+.toast.info { border-left: 3px solid var(--sky); }
+@keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes fadeOut { to { opacity: 0; transform: translateX(10px); } }
 
-  /* ── CELL INPUTS ── */
-  .cell-input, .cell-select {
-    width: 100%;
-    background: transparent;
-    border: 1px solid transparent;
-    color: var(--text);
-    font-family: var(--font-body);
-    font-size: 12px;
-    padding: 4px 6px;
-    border-radius: 4px;
-    outline: none;
-    transition: border 0.15s, background 0.15s;
-    -webkit-appearance: none;
-    appearance: none;
-  }
-  .cell-input:focus, .cell-select:focus {
-    border-color: var(--accent);
-    background: rgba(79,142,247,0.07);
-  }
-  .cell-input:hover, .cell-select:hover {
-    border-color: var(--border);
-    background: var(--input-bg);
-  }
-  .cell-select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b7280'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 6px center;
-    padding-right: 22px;
-    cursor: pointer;
-  }
-  .cell-select option {
-    background: #1e2330;
-    color: var(--text);
-  }
-  input[type="date"].cell-input {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color-scheme: dark;
-  }
-  input[type="number"].cell-input {
-    font-family: var(--font-mono);
-    text-align: right;
-  }
+/* EMPTY STATE */
+.empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
+.empty-state .icon { font-size: 48px; margin-bottom: 12px; opacity: 0.3; }
+.empty-state p { font-size: 14px; }
 
-  /* ── STATUS BADGES ── */
-  .status-badge {
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 3px 9px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 500;
-    white-space: nowrap;
-  }
-  .status-otto { background: rgba(167,139,250,0.15); color: var(--accent2); border: 1px solid rgba(167,139,250,0.3); }
-  .status-pkg  { background: rgba(79,142,247,0.15); color: var(--accent); border: 1px solid rgba(79,142,247,0.3); }
-  .status-epi  { background: rgba(52,211,153,0.15); color: var(--green); border: 1px solid rgba(52,211,153,0.3); }
-  .status-both { background: rgba(251,191,36,0.15); color: var(--yellow); border: 1px solid rgba(251,191,36,0.3); }
-  .status-bulk { background: rgba(251,146,60,0.15); color: var(--orange); border: 1px solid rgba(251,146,60,0.3); }
-  .status-other{ background: rgba(107,114,128,0.15); color: var(--muted); border: 1px solid rgba(107,114,128,0.3); }
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted2); }
 
-  /* ── RATE CHECKBOX ── */
-  .rate-wrap { display: flex; align-items: center; justify-content: center; gap: 6px; }
-  .rate-wrap input[type=checkbox] { display: none; }
-  .rate-pill {
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s;
-    border: 1px solid var(--border);
-    color: var(--muted);
-  }
-  .rate-pill.yes { background: rgba(52,211,153,0.15); color: var(--green); border-color: rgba(52,211,153,0.4); }
-  .rate-pill.no { background: rgba(248,113,113,0.12); color: var(--red); border-color: rgba(248,113,113,0.3); }
+/* MANAGE DROPDOWN INLINE */
+.manage-dropdown {
+  position: absolute; z-index: 200;
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: var(--radius); padding: 4px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  display: none; min-width: 160px;
+}
+.manage-dropdown.open { display: block; }
+.manage-dropdown-item {
+  padding: 7px 12px; font-size: 12.5px; border-radius: 4px;
+  cursor: pointer; color: var(--text2); transition: all 0.1s;
+}
+.manage-dropdown-item:hover { background: var(--surface2); color: var(--text); }
 
-  /* ── TIMER ── */
-  .timer-wrap {
-    display: flex; align-items: center; gap: 4px;
-    white-space: nowrap;
-  }
-  .timer-btn {
-    width: 26px; height: 26px;
-    border-radius: 6px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--muted);
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px;
-    transition: all 0.15s;
-  }
-  .timer-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(79,142,247,0.08); }
-  .timer-btn.active { border-color: var(--green); color: var(--green); background: rgba(52,211,153,0.1); }
-  .timer-display {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--text);
-    min-width: 52px;
-    text-align: center;
-    background: var(--input-bg);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 3px 5px;
-  }
-  .timer-display.running { color: var(--green); border-color: rgba(52,211,153,0.3); }
+.relative { position: relative; }
 
-  .time-cell {
-    display: flex; align-items: center; gap: 4px;
-  }
-  .time-value {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--muted);
-    min-width: 58px;
-    background: var(--input-bg);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 3px 6px;
-    text-align: center;
-  }
+/* COLUMN WIDTHS */
+.col-num { width: 40px; }
+.col-date { width: 100px; }
+.col-month { width: 70px; }
+.col-name { width: 160px; }
+.col-event { width: 180px; }
+.col-db { width: 170px; }
+.col-sdate { width: 105px; }
+.col-edate { width: 105px; }
+.col-status { width: 175px; }
+.col-rate { width: 65px; }
+.col-lines { width: 85px; }
+.col-stime { width: 170px; }
+.col-etime { width: 105px; }
+.col-total { width: 90px; }
+.col-actions { width: 64px; }
 
-  /* ── ACTIONS ── */
-  .action-btns { display: flex; gap: 4px; justify-content: center; }
-  .icon-btn {
-    width: 24px; height: 24px;
-    border-radius: 4px;
-    border: none;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px;
-    transition: all 0.12s;
-    background: transparent;
-    color: var(--muted);
-  }
-  .icon-btn:hover { background: rgba(248,113,113,0.15); color: var(--red); }
-  .icon-btn.copy:hover { background: rgba(79,142,247,0.15); color: var(--accent); }
+.total-time-display { font-family: var(--font-mono); font-size: 12px; color: var(--sky); }
 
-  /* ── MODAL ── */
-  .modal-overlay {
-    display: none;
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.7);
-    z-index: 200;
-    align-items: center; justify-content: center;
-  }
-  .modal-overlay.open { display: flex; }
-  .modal {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 28px;
-    width: 380px;
-    max-width: 95vw;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-  }
-  .modal h3 { font-family: var(--font-head); font-size: 16px; margin-bottom: 20px; }
-  .modal-field { margin-bottom: 14px; }
-  .modal-field label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 5px; letter-spacing: 0.5px; text-transform: uppercase; }
-  .modal-field input, .modal-field select {
-    width: 100%;
-    background: var(--input-bg);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-family: var(--font-body);
-    font-size: 13px;
-    padding: 9px 12px;
-    border-radius: 6px;
-    outline: none;
-    transition: border 0.15s;
-  }
-  .modal-field input:focus, .modal-field select:focus { border-color: var(--accent); }
-  .modal-actions { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
-
-  /* ── TOAST ── */
-  .toast {
-    position: fixed; bottom: 24px; right: 24px;
-    background: var(--surface2);
-    border: 1px solid var(--green);
-    color: var(--green);
-    padding: 10px 18px;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: 500;
-    z-index: 999;
-    transform: translateY(20px);
-    opacity: 0;
-    transition: all 0.3s;
-    pointer-events: none;
-  }
-  .toast.show { transform: translateY(0); opacity: 1; }
-
-  /* ── MANAGE TABS ── */
-  .manage-tabs {
-    display: flex; gap: 6px;
-    margin-bottom: 16px;
-    background: var(--bg);
-    border-radius: 8px;
-    padding: 4px;
-  }
-  .manage-tab {
-    flex: 1;
-    padding: 7px 10px;
-    border-radius: 6px;
-    border: none;
-    background: transparent;
-    color: var(--muted);
-    font-family: var(--font-body);
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.15s;
-    white-space: nowrap;
-  }
-  .manage-tab:hover { color: var(--text); }
-  .manage-tab.active { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
-  .tab-panel { display: none; }
-  .tab-panel.active { display: block; }
-
-  /* ── CHECKBOX LIST ITEMS ── */
-  .check-item {
-    display: flex; align-items: center; gap: 10px;
-    background: var(--input-bg);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 7px 12px;
-    cursor: pointer;
-    transition: border 0.12s;
-  }
-  .check-item:hover { border-color: var(--accent); }
-  .check-item input[type=checkbox] {
-    width: 15px; height: 15px;
-    accent-color: var(--accent);
-    cursor: pointer;
-    flex-shrink: 0;
-  }
-  .check-item.checked { border-color: var(--red); background: rgba(248,113,113,0.06); }
-  .check-item label { cursor: pointer; font-size: 13px; flex:1; }
-
-  /* ── MANAGE LIST ── */
-  .manage-item {
-    display: flex; align-items: center; justify-content: space-between;
-    background: var(--input-bg);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 7px 12px;
-    font-size: 13px;
-  }
-  .manage-item-name { flex: 1; }
-  .manage-item-actions { display: flex; gap: 6px; }
-  .manage-item input {
-    background: transparent;
-    border: none;
-    color: var(--text);
-    font-family: var(--font-body);
-    font-size: 13px;
-    outline: none;
-    width: 100%;
-  }
-  .manage-item input:focus { color: var(--accent); }
-  .mini-btn {
-    padding: 3px 9px;
-    border-radius: 4px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--muted);
-    font-size: 11px;
-    cursor: pointer;
-    transition: all 0.12s;
-  }
-  .mini-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .mini-btn.del:hover { border-color: var(--red); color: var(--red); }
-
-  /* ── SCROLLBAR ── */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
-
-  .col-date { min-width: 130px; }
-  .col-month { min-width: 100px; }
-  .col-name { min-width: 110px; }
-  .col-episode { min-width: 150px; }
-  .col-db { min-width: 140px; }
-  .col-sdate { min-width: 130px; }
-  .col-edate { min-width: 130px; }
-  .col-status { min-width: 110px; }
-  .col-rate { min-width: 90px; }
-  .col-lines { min-width: 80px; }
-  .col-timer { min-width: 160px; }
-  .col-elapsed { min-width: 90px; }
+/* Header manage buttons */
+.th-manage { display: flex; align-items: center; gap: 4px; flex-direction: column; align-items: flex-start; }
+.th-manage-btn { font-size: 9px; padding: 1px 5px; border-radius: 3px; cursor: pointer; background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(245,158,11,0.2); font-family: var(--font-ui); }
+.th-manage-btn:hover { background: rgba(245,158,11,0.2); }
 </style>
 </head>
 <body>
@@ -486,499 +287,231 @@
 <!-- HEADER -->
 <div class="header">
   <div class="header-left">
-    <div class="logo">PT</div>
-    <div>
-      <div class="title">Production <span>Tracker</span></div>
-    </div>
-    <div class="ist-badge">🇮🇳 IST</div>
+    <div class="logo">OPS<span>TRACK</span></div>
+    <div class="ist-clock" id="istClock">IST --:--:--</div>
   </div>
   <div class="header-right">
-    <div class="ist-clock" id="clock">--:--:-- IST</div>
+    <button class="btn btn-amber" onclick="addRow()">＋ Add Row</button>
+    <button class="btn btn-sky" onclick="copyAll()">⎘ Copy All</button>
+    <button class="btn btn-green" onclick="exportCSV()">↓ Export CSV</button>
+    <button class="btn btn-red" onclick="confirmClearAll()">✕ Clear All</button>
   </div>
 </div>
 
 <!-- TOOLBAR -->
 <div class="toolbar">
-  <button class="btn btn-primary" onclick="addRow()">＋ Add Row</button>
-  <button class="btn btn-purple" onclick="openNameModal()">👤 Manage Names</button>
-  <button class="btn btn-ghost" onclick="openDbModal()">🗄 Manage Database</button>
-  <button class="btn btn-ghost" onclick="openStatusModal()">🏷 Manage Status</button>
-  <div class="sep"></div>
-  <button class="btn btn-success" onclick="exportCSV()">⬇ Export CSV</button>
-  <button class="btn btn-ghost" onclick="clearAll()">🗑 Clear All</button>
-  <div class="stats-bar">
-    <span class="stat-chip">Rows: <strong id="stat-rows">0</strong></span>
-    <span class="stat-chip">Running: <strong id="stat-running" style="color:var(--green)">0</strong></span>
+  <span style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.5px;">MANAGE:</span>
+  <div class="relative">
+    <button class="btn btn-outline btn-sm" onclick="toggleDropdown('nameMenu')">👤 Names ▾</button>
+    <div class="manage-dropdown" id="nameMenu">
+      <div class="manage-dropdown-item" onclick="openModal('bulkAddName');closeDropdowns()">＋ Add Names in Bulk</div>
+      <div class="manage-dropdown-item" onclick="openModal('bulkDelName');closeDropdowns()">－ Delete Names in Bulk</div>
+    </div>
   </div>
+  <div class="relative">
+    <button class="btn btn-outline btn-sm" onclick="toggleDropdown('dbMenu')">🗄 Database ▾</button>
+    <div class="manage-dropdown" id="dbMenu">
+      <div class="manage-dropdown-item" onclick="openModal('bulkAddDB');closeDropdowns()">＋ Add DBs in Bulk</div>
+      <div class="manage-dropdown-item" onclick="openModal('bulkDelDB');closeDropdowns()">－ Delete DBs in Bulk</div>
+    </div>
+  </div>
+  <div class="relative">
+    <button class="btn btn-outline btn-sm" onclick="toggleDropdown('statusMenu')">📋 Status ▾</button>
+    <div class="manage-dropdown" id="statusMenu">
+      <div class="manage-dropdown-item" onclick="openModal('bulkAddStatus');closeDropdowns()">＋ Add Status Options</div>
+      <div class="manage-dropdown-item" onclick="openModal('bulkDelStatus');closeDropdowns()">－ Delete Status Options</div>
+    </div>
+  </div>
+  <div class="toolbar-sep"></div>
+  <span id="rowCount" style="font-size:11.5px;color:var(--muted);font-family:var(--font-mono);">0 rows</span>
 </div>
 
 <!-- TABLE -->
-<div class="table-wrap">
-  <table id="mainTable">
+<div class="table-wrapper">
+  <div class="table-scroll">
+  <table id="trackerTable">
     <thead>
       <tr>
         <th class="col-num">#</th>
-        <th class="col-date">📅 Date (IST)</th>
+        <th class="col-date">Date (IST)</th>
         <th class="col-month">Month</th>
         <th class="col-name">Name</th>
-        <th class="col-episode">Episode Name</th>
+        <th class="col-event">Event Name</th>
         <th class="col-db">Database</th>
         <th class="col-sdate">Start Date</th>
         <th class="col-edate">End Date</th>
         <th class="col-status">Status</th>
-        <th class="col-rate">Rate</th>
-        <th class="col-lines">Lines</th>
-        <th class="col-timer">⏱ Timer</th>
-        <th class="col-elapsed">Elapsed</th>
-        <th class="col-actions">⚙</th>
+        <th class="col-rate">Rates</th>
+        <th class="col-lines">Lines Processed</th>
+        <th class="col-stime">Start Time ▶ Controls</th>
+        <th class="col-etime">End Time</th>
+        <th class="col-total">Total Time</th>
+        <th class="col-actions">Actions</th>
       </tr>
     </thead>
     <tbody id="tableBody"></tbody>
   </table>
+  </div>
 </div>
 
-<!-- MANAGE NAMES MODAL -->
-<div class="modal-overlay" id="nameModal">
-  <div class="modal" style="width:500px;max-height:90vh;display:flex;flex-direction:column">
-    <h3>👤 Manage Names</h3>
-    <div class="manage-tabs">
-      <button class="manage-tab active" onclick="switchTab('name','single')">＋ Add One</button>
-      <button class="manage-tab" onclick="switchTab('name','bulk')">⚡ Bulk Add</button>
-      <button class="manage-tab" onclick="switchTab('name','bulkdel')">🗑 Bulk Delete</button>
-    </div>
-    <!-- Single Add -->
-    <div id="name-tab-single" class="tab-panel active">
-      <div class="modal-field">
-        <label>Name</label>
-        <div style="display:flex;gap:8px">
-          <input type="text" id="newNameInput" placeholder="Enter name..." style="flex:1" onkeydown="if(event.key==='Enter')addName()" />
-          <button class="btn btn-primary" onclick="addName()">＋ Add</button>
-        </div>
-      </div>
-    </div>
-    <!-- Bulk Add -->
-    <div id="name-tab-bulk" class="tab-panel">
-      <div class="modal-field">
-        <label>Paste or type names — one per line</label>
-        <textarea id="bulkNameInput" placeholder="John&#10;Jane&#10;Bob&#10;Alice" rows="6" style="width:100%;background:var(--input-bg);border:1px solid var(--border);color:var(--text);font-family:var(--font-body);font-size:13px;padding:9px 12px;border-radius:6px;outline:none;resize:vertical"></textarea>
-      </div>
-      <button class="btn btn-primary" style="width:100%" onclick="bulkAddNames()">⚡ Add All</button>
-    </div>
-    <!-- Bulk Delete -->
-    <div id="name-tab-bulkdel" class="tab-panel">
-      <div style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
-        <span style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Select to delete</span>
-        <div style="display:flex;gap:6px">
-          <button class="mini-btn" onclick="selectAllManage('nameCheckboxes',true)">All</button>
-          <button class="mini-btn" onclick="selectAllManage('nameCheckboxes',false)">None</button>
-        </div>
-      </div>
-      <div id="nameCheckboxes" style="max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:5px;margin-bottom:12px"></div>
-      <button class="btn btn-danger" style="width:100%" onclick="bulkDeleteNames()">🗑 Delete Selected</button>
-    </div>
-    <div style="border-top:1px solid var(--border);margin-top:14px;padding-top:12px">
-      <label style="font-size:11px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;display:block;margin-bottom:8px">All Names <span id="names-count" style="color:var(--accent)"></span></label>
-      <div id="namesList" style="max-height:180px;overflow-y:auto;display:flex;flex-direction:column;gap:5px"></div>
-    </div>
-    <div class="modal-actions" style="margin-top:12px">
-      <button class="btn btn-ghost" onclick="closeModal('nameModal')">Close</button>
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ===== MODALS ===== -->
+
+<!-- Bulk Add Name -->
+<div class="modal-overlay" id="modal-bulkAddName">
+  <div class="modal">
+    <div class="modal-title">Add Names in Bulk</div>
+    <div class="modal-subtitle">Enter one name per line</div>
+    <textarea class="modal-textarea" id="bulkAddNameInput" placeholder="John Doe&#10;Jane Smith&#10;..."></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('bulkAddName')">Cancel</button>
+      <button class="btn btn-amber" onclick="bulkAddNames()">Add Names</button>
     </div>
   </div>
 </div>
 
-<!-- MANAGE DATABASE MODAL -->
-<div class="modal-overlay" id="dbModal">
-  <div class="modal" style="width:500px;max-height:90vh;display:flex;flex-direction:column">
-    <h3>🗄 Manage Databases</h3>
-    <div class="manage-tabs">
-      <button class="manage-tab active" onclick="switchTab('db','single')">＋ Add One</button>
-      <button class="manage-tab" onclick="switchTab('db','bulk')">⚡ Bulk Add</button>
-      <button class="manage-tab" onclick="switchTab('db','bulkdel')">🗑 Bulk Delete</button>
-    </div>
-    <div id="db-tab-single" class="tab-panel active">
-      <div class="modal-field">
-        <label>Database / Location</label>
-        <div style="display:flex;gap:8px">
-          <input type="text" id="newDbInput" placeholder="Enter database or location..." style="flex:1" onkeydown="if(event.key==='Enter')addDatabase()" />
-          <button class="btn btn-primary" onclick="addDatabase()">＋ Add</button>
-        </div>
-      </div>
-    </div>
-    <div id="db-tab-bulk" class="tab-panel">
-      <div class="modal-field">
-        <label>Paste or type databases — one per line</label>
-        <textarea id="bulkDbInput" placeholder="Mysore&#10;Coimbatore&#10;Trichy&#10;Madurai" rows="6" style="width:100%;background:var(--input-bg);border:1px solid var(--border);color:var(--text);font-family:var(--font-body);font-size:13px;padding:9px 12px;border-radius:6px;outline:none;resize:vertical"></textarea>
-      </div>
-      <button class="btn btn-primary" style="width:100%" onclick="bulkAddDbs()">⚡ Add All</button>
-    </div>
-    <div id="db-tab-bulkdel" class="tab-panel">
-      <div style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
-        <span style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Select to delete</span>
-        <div style="display:flex;gap:6px">
-          <button class="mini-btn" onclick="selectAllManage('dbCheckboxes',true)">All</button>
-          <button class="mini-btn" onclick="selectAllManage('dbCheckboxes',false)">None</button>
-        </div>
-      </div>
-      <div id="dbCheckboxes" style="max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:5px;margin-bottom:12px"></div>
-      <button class="btn btn-danger" style="width:100%" onclick="bulkDeleteDbs()">🗑 Delete Selected</button>
-    </div>
-    <div style="border-top:1px solid var(--border);margin-top:14px;padding-top:12px">
-      <label style="font-size:11px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;display:block;margin-bottom:8px">All Databases <span id="dbs-count" style="color:var(--accent)"></span></label>
-      <div id="dbList" style="max-height:180px;overflow-y:auto;display:flex;flex-direction:column;gap:5px"></div>
-    </div>
-    <div class="modal-actions" style="margin-top:12px">
-      <button class="btn btn-ghost" onclick="closeModal('dbModal')">Close</button>
+<!-- Bulk Delete Name -->
+<div class="modal-overlay" id="modal-bulkDelName">
+  <div class="modal">
+    <div class="modal-title">Delete Names in Bulk</div>
+    <div class="modal-subtitle">Select names to remove from the dropdown</div>
+    <div class="modal-list" id="delNameList"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('bulkDelName')">Cancel</button>
+      <button class="btn btn-red" onclick="bulkDeleteNames()">Delete Selected</button>
     </div>
   </div>
 </div>
 
-<!-- MANAGE STATUS MODAL -->
-<div class="modal-overlay" id="statusModal">
-  <div class="modal" style="width:500px;max-height:90vh;display:flex;flex-direction:column">
-    <h3>🏷 Manage Statuses</h3>
-    <div class="manage-tabs">
-      <button class="manage-tab active" onclick="switchTab('status','single')">＋ Add One</button>
-      <button class="manage-tab" onclick="switchTab('status','bulk')">⚡ Bulk Add</button>
-      <button class="manage-tab" onclick="switchTab('status','bulkdel')">🗑 Bulk Delete</button>
-    </div>
-    <div id="status-tab-single" class="tab-panel active">
-      <div class="modal-field">
-        <label>Status Key (no spaces, e.g. "review")</label>
-        <input type="text" id="newStatusKey" placeholder="e.g. review" style="width:100%;margin-bottom:8px" onkeydown="if(event.key==='Tab'){event.preventDefault();document.getElementById('newStatusLabel').focus()}" />
-        <label>Display Label (e.g. "In Review")</label>
-        <div style="display:flex;gap:8px">
-          <input type="text" id="newStatusLabel" placeholder="e.g. In Review" style="flex:1" onkeydown="if(event.key==='Enter')addStatus()" />
-          <button class="btn btn-primary" onclick="addStatus()">＋ Add</button>
-        </div>
-      </div>
-    </div>
-    <div id="status-tab-bulk" class="tab-panel">
-      <div class="modal-field">
-        <label>One per line — format: <code style="color:var(--accent)">key: Label</code> &nbsp;(e.g. "review: In Review")</label>
-        <textarea id="bulkStatusInput" placeholder="review: In Review&#10;done: Completed&#10;hold: On Hold" rows="6" style="width:100%;background:var(--input-bg);border:1px solid var(--border);color:var(--text);font-family:var(--font-body);font-size:13px;padding:9px 12px;border-radius:6px;outline:none;resize:vertical"></textarea>
-      </div>
-      <button class="btn btn-primary" style="width:100%" onclick="bulkAddStatuses()">⚡ Add All</button>
-    </div>
-    <div id="status-tab-bulkdel" class="tab-panel">
-      <div style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
-        <span style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Select to delete</span>
-        <div style="display:flex;gap:6px">
-          <button class="mini-btn" onclick="selectAllManage('statusCheckboxes',true)">All</button>
-          <button class="mini-btn" onclick="selectAllManage('statusCheckboxes',false)">None</button>
-        </div>
-      </div>
-      <div id="statusCheckboxes" style="max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:5px;margin-bottom:12px"></div>
-      <button class="btn btn-danger" style="width:100%" onclick="bulkDeleteStatuses()">🗑 Delete Selected</button>
-    </div>
-    <div style="border-top:1px solid var(--border);margin-top:14px;padding-top:12px">
-      <label style="font-size:11px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;display:block;margin-bottom:8px">All Statuses <span id="statuses-count" style="color:var(--accent)"></span></label>
-      <div id="statusList" style="max-height:180px;overflow-y:auto;display:flex;flex-direction:column;gap:5px"></div>
-    </div>
-    <div class="modal-actions" style="margin-top:12px">
-      <button class="btn btn-ghost" onclick="closeModal('statusModal')">Close</button>
+<!-- Bulk Add DB -->
+<div class="modal-overlay" id="modal-bulkAddDB">
+  <div class="modal">
+    <div class="modal-title">Add Databases in Bulk</div>
+    <div class="modal-subtitle">Enter one database per line</div>
+    <textarea class="modal-textarea" id="bulkAddDBInput" placeholder="New York&#10;Chicago East&#10;..."></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('bulkAddDB')">Cancel</button>
+      <button class="btn btn-amber" onclick="bulkAddDBs()">Add Databases</button>
     </div>
   </div>
 </div>
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
+<!-- Bulk Delete DB -->
+<div class="modal-overlay" id="modal-bulkDelDB">
+  <div class="modal">
+    <div class="modal-title">Delete Databases in Bulk</div>
+    <div class="modal-subtitle">Select databases to remove from the dropdown</div>
+    <div class="modal-list" id="delDBList"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('bulkDelDB')">Cancel</button>
+      <button class="btn btn-red" onclick="bulkDeleteDBs()">Delete Selected</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bulk Add Status -->
+<div class="modal-overlay" id="modal-bulkAddStatus">
+  <div class="modal">
+    <div class="modal-title">Add Status Options</div>
+    <div class="modal-subtitle">Enter one status per line</div>
+    <textarea class="modal-textarea" id="bulkAddStatusInput" placeholder="In Progress&#10;On Hold&#10;..."></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('bulkAddStatus')">Cancel</button>
+      <button class="btn btn-amber" onclick="bulkAddStatuses()">Add Statuses</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bulk Delete Status -->
+<div class="modal-overlay" id="modal-bulkDelStatus">
+  <div class="modal">
+    <div class="modal-title">Delete Status Options</div>
+    <div class="modal-subtitle">Select statuses to remove</div>
+    <div class="modal-list" id="delStatusList"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('bulkDelStatus')">Cancel</button>
+      <button class="btn btn-red" onclick="bulkDeleteStatuses()">Delete Selected</button>
+    </div>
+  </div>
+</div>
+
+<!-- Clear All Confirm -->
+<div class="modal-overlay" id="modal-clearConfirm">
+  <div class="modal">
+    <div class="modal-title">Clear All Rows?</div>
+    <div class="modal-subtitle">This will permanently delete all rows. This action cannot be undone.</div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('clearConfirm')">Cancel</button>
+      <button class="btn btn-red" onclick="clearAll()">Yes, Clear All</button>
+    </div>
+  </div>
+</div>
 
 <script>
-// ── DATA ──
-const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-let statusOptions = ['otto','pkg','epi','both','bulk'];
-let statusLabels = { otto:'Otto', pkg:'PKG', epi:'Episode', both:'Both', bulk:'Bulk' };
-const DEFAULT_STATUS_OPTIONS = ['otto','pkg','epi','both','bulk'];
-const DEFAULT_STATUS_LABELS  = { otto:'Otto', pkg:'PKG', epi:'Episode', both:'Both', bulk:'Bulk' };
+// ============================================================
+// STATE
+// ============================================================
+const STORAGE_KEY = 'opstrace_v3';
+const NAMES_KEY = 'opstrace_names_v3';
+const DBS_KEY = 'opstrace_dbs_v3';
+const STATUS_KEY = 'opstrace_status_v3';
 
-const DEFAULT_NAMES = ['A','B','C','D','E','F','G','H','I','J'];
-const DEFAULT_DATABASES = [
- "salisbury" , "new england" , "michigan" , "florida" , "virginia" ,
- "ohio"      , "pennsylvania", "indiana"  , "illinois" , "georgia" ,
- "north carolina", "new york" , "texas"    , "arizona"  , "washington",
- "massachusetts", "tennessee"  , "missouri" , "maryland" , "wisconsin",
+const DEFAULT_NAMES = [
+  "Karthik Govindasamy","Karthikeyan Panchavaranam","Bala Thirupathi Raaja",
+  "Mohammed Umar Mansoor","Janani Venkatesalu","Dilip Suresh","Kishore Sivalingam",
+  "Dharsini Nethaji","Tamilarasi Balamurugan","Naveen Kumar Sankar",
+  "Sonia Selva Kumar","Vijayalakshmi Janakiraman","P. Akshay Kumar",
+  "pragadeeshwaran Ganesan","Hemavathy Rajendran"
 ];
+const DEFAULT_DBS = [
+  "Baltimore/Salisbury","Central Illinois","Chicago","Colorado",
+  "Florida - North - Jax","Florida - North - PC/Tally","Florida - South","Florida - West",
+  "Georgia - Atlanta","Georgia - Coastal","HLLY","Houston","Indiana","Michigan",
+  "Mississippi - Jackson","Mississippi - Little Rock","New England","New Mexico",
+  "New York","New York - Wilkes-Barre","Oregon","Philadelphia","Pittsburgh",
+  "Pittsburgh - JAS","Pittsburgh - WYC","Sacramento/Fresno","San Francisco/Monterey",
+  "Southern Virginia","Tennessee - Chat/Knox","Tennessee - Memphis","Tennessee - Nashville",
+  "Twin Cities","Utah","Washington","Washington, D.C."
+];
+const DEFAULT_STATUSES = [
+  "OTO Creation","Package Creation","Episode Name/Time/Group change",
+  "OTO Creation/ Package Creation","Bulk Revision"
+];
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
-let names = [];
-let databases = [];
-let rows = [];
-let rowIdCounter = 1;
-let timers = {};
-let runningCount = 0;
+let names = JSON.parse(localStorage.getItem(NAMES_KEY) || 'null') || [...DEFAULT_NAMES];
+let dbs = JSON.parse(localStorage.getItem(DBS_KEY) || 'null') || [...DEFAULT_DBS];
+let statuses = JSON.parse(localStorage.getItem(STATUS_KEY) || 'null') || [...DEFAULT_STATUSES];
+let rows = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
 
-// ── LOCAL STORAGE ──
-const LS_ROWS = 'pt_rows';
-const LS_COUNTER = 'pt_counter';
-const LS_NAMES = 'pt_names';
-const LS_DBS = 'pt_databases';
-const LS_STATUSES = 'pt_statuses';
+// Active timer intervals: { rowId: intervalId }
+const timerIntervals = {};
 
-function saveAll() {
-  const saveRows = rows.map(r => ({...r, timerRunning: false}));
-  try {
-    localStorage.setItem(LS_ROWS, JSON.stringify(saveRows));
-    localStorage.setItem(LS_COUNTER, rowIdCounter);
-    localStorage.setItem(LS_NAMES, JSON.stringify(names));
-    localStorage.setItem(LS_DBS, JSON.stringify(databases));
-    localStorage.setItem(LS_STATUSES, JSON.stringify({options: statusOptions, labels: statusLabels}));
-  } catch(e) { console.warn('Save failed', e); }
-}
-
-function loadAll() {
-  try {
-    const savedNames = localStorage.getItem(LS_NAMES);
-    names = savedNames ? JSON.parse(savedNames) : [...DEFAULT_NAMES];
-    const savedDbs = localStorage.getItem(LS_DBS);
-    databases = savedDbs ? JSON.parse(savedDbs) : [...DEFAULT_DATABASES];
-    const savedStatuses = localStorage.getItem(LS_STATUSES);
-    if (savedStatuses) {
-      const s = JSON.parse(savedStatuses);
-      statusOptions = s.options || [...DEFAULT_STATUS_OPTIONS];
-      statusLabels  = s.labels  || {...DEFAULT_STATUS_LABELS};
-    } else {
-      statusOptions = [...DEFAULT_STATUS_OPTIONS];
-      statusLabels  = {...DEFAULT_STATUS_LABELS};
-    }
-    const savedCounter = localStorage.getItem(LS_COUNTER);
-    if (savedCounter) rowIdCounter = parseInt(savedCounter);
-    const savedRows = localStorage.getItem(LS_ROWS);
-    if (savedRows) {
-      rows = JSON.parse(savedRows);
-      return true;
-    }
-  } catch(e) { console.warn('Load failed', e); }
-  names = [...DEFAULT_NAMES];
-  databases = [...DEFAULT_DATABASES];
-  statusOptions = [...DEFAULT_STATUS_OPTIONS];
-  statusLabels  = {...DEFAULT_STATUS_LABELS};
-  return false;
-}
-
-// Auto-save on any data change — debounced
-let saveTimer = null;
-function scheduleSave() {
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(saveAll, 600);
-}
-
-// ── IST CLOCK ──
+// ============================================================
+// IST UTILITIES
+// ============================================================
 function getIST() {
-  return new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  const now = new Date();
+  return new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
 }
-function toISTString(d) {
-  return d.toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: false });
+function formatISTTime(d) {
+  return d.toLocaleTimeString('en-IN', { hour12: false, timeZone: 'Asia/Kolkata', hour:'2-digit', minute:'2-digit', second:'2-digit' });
 }
-function toISTDateString(d) {
+function formatISTDate(d) {
   const ist = new Date(d.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
-  const y = ist.getFullYear();
-  const m = String(ist.getMonth()+1).padStart(2,'0');
-  const day = String(ist.getDate()).padStart(2,'0');
-  return `${y}-${m}-${day}`;
+  return `${String(ist.getDate()).padStart(2,'0')}/${String(ist.getMonth()+1).padStart(2,'0')}/${ist.getFullYear()}`;
 }
-function updateClock() {
-  const now = getIST();
-  document.getElementById('clock').textContent = toISTString(now) + ' IST';
+function formatISTDateInput(d) {
+  const ist = new Date(d.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  return `${ist.getFullYear()}-${String(ist.getMonth()+1).padStart(2,'0')}-${String(ist.getDate()).padStart(2,'0')}`;
 }
-setInterval(updateClock, 1000);
-updateClock();
-
-// ── ROW DATA MODEL ──
-function createRow(data = {}) {
+function getISTMonth() {
   const ist = getIST();
-  return {
-    id: rowIdCounter++,
-    date: data.date || toISTDateString(ist),
-    month: data.month || MONTHS[ist.getMonth()],
-    name: data.name || names[0] || '',
-    episode: data.episode || '',
-    database: data.database || databases[0] || '',
-    startDate: data.startDate || '',
-    endDate: data.endDate || '',
-    status: data.status || 'otto',
-    rate: data.rate || false,
-    lines: data.lines || '',
-    startTime: data.startTime || '',
-    endTime: data.endTime || '',
-    elapsed: data.elapsed || 0,
-    timerRunning: false,
-  };
+  return MONTHS[ist.getMonth()];
 }
-
-// ── RENDER ──
-function render() {
-  const tbody = document.getElementById('tableBody');
-  tbody.innerHTML = '';
-  rows.forEach((row, idx) => {
-    tbody.appendChild(buildRow(row, idx));
-  });
-  document.getElementById('stat-rows').textContent = rows.length;
-  updateRunningCount();
-}
-
-function buildRow(row, idx) {
-  const tr = document.createElement('tr');
-  tr.dataset.id = row.id;
-
-  // Row number
-  tr.innerHTML = `<td class="row-num">${idx + 1}</td>`;
-
-  // Date (IST)
-  tr.appendChild(makeCell(`
-    <input type="date" class="cell-input" value="${row.date}" onchange="updateRow(${row.id},'date',this.value);syncMonth(${row.id},this.value)">
-  `));
-
-  // Month
-  tr.appendChild(makeCell(`
-    <select class="cell-select" onchange="updateRow(${row.id},'month',this.value)">
-      ${MONTHS.map(m => `<option value="${m}"${row.month===m?' selected':''}>${m}</option>`).join('')}
-    </select>
-  `));
-
-  // Name dropdown
-  tr.appendChild(makeCell(`
-    <select class="cell-select" onchange="updateRow(${row.id},'name',this.value)">
-      ${names.map(n => `<option value="${n}"${row.name===n?' selected':''}>${n}</option>`).join('')}
-    </select>
-  `));
-
-  // Episode (manual)
-  tr.appendChild(makeCell(`
-    <input type="text" class="cell-input" value="${row.episode}" placeholder="Enter episode..." onchange="updateRow(${row.id},'episode',this.value)">
-  `));
-
-  // Database dropdown (35)
-  tr.appendChild(makeCell(`
-    <select class="cell-select" onchange="updateRow(${row.id},'database',this.value)">
-      ${databases.map(d => `<option value="${d}"${row.database===d?' selected':''}>${d}</option>`).join('')}
-    </select>
-  `));
-
-  // Start Date
-  tr.appendChild(makeCell(`
-    <input type="date" class="cell-input" value="${row.startDate}" onchange="updateRow(${row.id},'startDate',this.value)">
-  `));
-
-  // End Date
-  tr.appendChild(makeCell(`
-    <input type="date" class="cell-input" value="${row.endDate}" onchange="updateRow(${row.id},'endDate',this.value)">
-  `));
-
-  // Status
-  const statusBadgeClass = `status-${row.status}`;
-  const statusLabel = statusLabels[row.status] || row.status;
-  tr.appendChild(makeCell(`
-    <select class="cell-select" style="color:inherit" onchange="updateRow(${row.id},'status',this.value);rebuildRow(${row.id})">
-      ${statusOptions.map(s => `<option value="${s}"${row.status===s?' selected':''}>${statusLabels[s]||s}</option>`).join('')}
-    </select>
-  `));
-
-  // Rate (checkbox as pill toggle)
-  tr.appendChild(makeCell(`
-    <div class="rate-wrap">
-      <span class="rate-pill ${row.rate?'yes':'no'}" onclick="toggleRate(${row.id},this)">
-        ${row.rate ? 'Yes' : 'No'}
-      </span>
-    </div>
-  `));
-
-  // Lines (numeric)
-  tr.appendChild(makeCell(`
-    <input type="number" class="cell-input" value="${row.lines}" placeholder="0" min="0" onchange="updateRow(${row.id},'lines',this.value)">
-  `));
-
-  // Timer
-  const isRunning = timers[row.id] && timers[row.id].interval;
-  const elapsed = formatElapsed(row.elapsed);
-  tr.appendChild(makeCell(`
-    <div class="timer-wrap">
-      <button class="timer-btn ${isRunning ? 'active' : ''}" id="tbtn-${row.id}" onclick="toggleTimer(${row.id})" title="${isRunning ? 'Stop' : 'Start'}">
-        ${isRunning ? '⏹' : '▶'}
-      </button>
-      <div class="timer-display ${isRunning ? 'running' : ''}" id="tdisplay-${row.id}">${elapsed}</div>
-      <button class="timer-btn" onclick="resetTimer(${row.id})" title="Reset" style="font-size:10px">↺</button>
-    </div>
-  `));
-
-  // Start/End Time display
-  tr.appendChild(makeCell(`
-    <div class="time-cell" style="flex-direction:column;gap:2px">
-      <div class="time-value" id="tstart-${row.id}">${row.startTime || '--:--:--'}</div>
-      <div class="time-value" id="tend-${row.id}" style="color:${row.endTime?'var(--orange)':'var(--muted)'}">${row.endTime || '--:--:--'}</div>
-    </div>
-  `));
-
-  // Actions
-  tr.appendChild(makeCell(`
-    <div class="action-btns">
-      <button class="icon-btn copy" onclick="duplicateRow(${row.id})" title="Duplicate">⧉</button>
-      <button class="icon-btn" onclick="deleteRow(${row.id})" title="Delete">✕</button>
-    </div>
-  `));
-
-  return tr;
-}
-
-function makeCell(html) {
-  const td = document.createElement('td');
-  td.innerHTML = html;
-  return td;
-}
-
-// ── ROW OPERATIONS ──
-function addRow() {
-  const row = createRow();
-  rows.push(row);
-  render();
-  scheduleSave();
-  showToast('Row added');
-}
-
-function deleteRow(id) {
-  if (timers[id]) { clearInterval(timers[id].interval); delete timers[id]; }
-  rows = rows.filter(r => r.id !== id);
-  render();
-  scheduleSave();
-}
-
-function duplicateRow(id) {
-  const orig = rows.find(r => r.id === id);
-  if (!orig) return;
-  const copy = createRow({...orig});
-  copy.timerRunning = false;
-  copy.elapsed = 0;
-  copy.startTime = '';
-  copy.endTime = '';
-  const idx = rows.findIndex(r => r.id === id);
-  rows.splice(idx + 1, 0, copy);
-  render();
-  scheduleSave();
-  showToast('Row duplicated');
-}
-
-function rebuildRow(id) { render(); }
-
-function syncMonth(id, dateVal) {
-  if (!dateVal) return;
-  const row = rows.find(r => r.id === id);
-  if (row) {
-    const m = parseInt(dateVal.split('-')[1]) - 1;
-    row.month = MONTHS[m];
-    scheduleSave();
-    render();
-  }
-}
-
-function toggleRate(id, el) {
-  const row = rows.find(r => r.id === id);
-  if (!row) return;
-  row.rate = !row.rate;
-  el.textContent = row.rate ? 'Yes' : 'No';
-  el.className = 'rate-pill ' + (row.rate ? 'yes' : 'no');
-  scheduleSave();
-}
-
-// ── TIMER ──
-function formatElapsed(ms) {
+function msToHMS(ms) {
   const s = Math.floor(ms / 1000);
   const h = Math.floor(s / 3600);
   const m = Math.floor((s % 3600) / 60);
@@ -986,443 +519,518 @@ function formatElapsed(ms) {
   return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
 }
 
-function toggleTimer(id) {
+// ============================================================
+// CLOCK
+// ============================================================
+function updateClock() {
+  const ist = getIST();
+  document.getElementById('istClock').textContent = 'IST ' + ist.toLocaleTimeString('en-IN', { hour12: false });
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ============================================================
+// SAVE / LOAD
+// ============================================================
+function saveRows() {
+  // Pause any running timers before saving elapsed
+  rows.forEach(r => {
+    if (r.timer && r.timer.isRunning && !r.timer.isPaused) {
+      r.timer.elapsed = r.timer.elapsed + (Date.now() - r.timer.runStart);
+      r.timer.runStart = Date.now();
+    }
+  });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(rows));
+  updateRowCount();
+}
+function saveNames() { localStorage.setItem(NAMES_KEY, JSON.stringify(names)); }
+function saveDbs() { localStorage.setItem(DBS_KEY, JSON.stringify(dbs)); }
+function saveStatuses() { localStorage.setItem(STATUS_KEY, JSON.stringify(statuses)); }
+
+// ============================================================
+// GENERATE ID
+// ============================================================
+function genId() { return 'r_' + Date.now() + '_' + Math.random().toString(36).slice(2,7); }
+
+// ============================================================
+// ADD ROW
+// ============================================================
+function addRow() {
+  const now = new Date();
+  const row = {
+    id: genId(),
+    date: formatISTDate(now),
+    month: getISTMonth(),
+    name: '',
+    event: '',
+    db: '',
+    startDate: '',
+    endDate: '',
+    status: '',
+    rates: '',
+    lines: '',
+    timer: { startIST: null, endIST: null, elapsed: 0, isRunning: false, isPaused: false, runStart: null }
+  };
+  rows.push(row);
+  saveRows();
+  renderTable();
+  toast('Row added', 'success');
+}
+
+// ============================================================
+// DELETE ROW
+// ============================================================
+function deleteRow(id) {
+  if (timerIntervals[id]) { clearInterval(timerIntervals[id]); delete timerIntervals[id]; }
+  rows = rows.filter(r => r.id !== id);
+  saveRows();
+  renderTable();
+}
+
+// ============================================================
+// COPY ROW
+// ============================================================
+function copyRow(id) {
   const row = rows.find(r => r.id === id);
   if (!row) return;
-
-  if (timers[id] && timers[id].interval) {
-    // STOP
-    clearInterval(timers[id].interval);
-    row.elapsed = timers[id].elapsed;
-    timers[id].interval = null;
-    row.endTime = toISTString(getIST());
-    runningCount = Math.max(0, runningCount - 1);
-    updateRunningCount();
-    scheduleSave();
-    const btn = document.getElementById(`tbtn-${id}`);
-    const disp = document.getElementById(`tdisplay-${id}`);
-    const tendEl = document.getElementById(`tend-${id}`);
-    if (btn) { btn.textContent = '▶'; btn.classList.remove('active'); }
-    if (disp) disp.classList.remove('running');
-    if (tendEl) { tendEl.textContent = row.endTime; tendEl.style.color = 'var(--orange)'; }
-  } else {
-    // START
-    if (!timers[id]) timers[id] = { elapsed: row.elapsed || 0 };
-    const startMs = Date.now() - timers[id].elapsed;
-    row.startTime = toISTString(getIST());
-    row.endTime = '';
-    runningCount++;
-    updateRunningCount();
-
-    const btn = document.getElementById(`tbtn-${id}`);
-    const disp = document.getElementById(`tdisplay-${id}`);
-    const tstartEl = document.getElementById(`tstart-${id}`);
-    const tendEl = document.getElementById(`tend-${id}`);
-    if (btn) { btn.textContent = '⏹'; btn.classList.add('active'); }
-    if (disp) disp.classList.add('running');
-    if (tstartEl) tstartEl.textContent = row.startTime;
-    if (tendEl) { tendEl.textContent = '--:--:--'; tendEl.style.color = 'var(--muted)'; }
-
-    timers[id].interval = setInterval(() => {
-      timers[id].elapsed = Date.now() - startMs;
-      const disp2 = document.getElementById(`tdisplay-${id}`);
-      if (disp2) disp2.textContent = formatElapsed(timers[id].elapsed);
-    }, 1000);
-  }
+  const t = row.timer;
+  const text = [
+    row.date, row.month, row.name, row.event, row.db,
+    row.startDate || '-', row.endDate || '-', row.status, row.rates || '-',
+    row.lines || '-',
+    t.startIST || '-', t.endIST || '-', t.elapsed > 0 ? msToHMS(t.elapsed) : '-'
+  ].join('\t');
+  navigator.clipboard.writeText(text).then(() => toast('Row copied to clipboard', 'info'));
 }
 
-function resetTimer(id) {
-  if (timers[id] && timers[id].interval) {
-    clearInterval(timers[id].interval);
-    runningCount = Math.max(0, runningCount - 1);
-    updateRunningCount();
-  }
-  timers[id] = { elapsed: 0 };
+// ============================================================
+// FIELD UPDATE
+// ============================================================
+function updateField(id, field, value) {
   const row = rows.find(r => r.id === id);
-  if (row) { row.elapsed = 0; row.startTime = ''; row.endTime = ''; }
-  const disp = document.getElementById(`tdisplay-${id}`);
-  const btn = document.getElementById(`tbtn-${id}`);
-  if (disp) { disp.textContent = '00:00:00'; disp.classList.remove('running'); }
-  if (btn) { btn.textContent = '▶'; btn.classList.remove('active'); }
+  if (!row) return;
+  row[field] = value;
+  saveRows();
 }
 
-function updateRunningCount() {
-  document.getElementById('stat-running').textContent = runningCount;
-}
-
-// ── TAB SWITCHING ──
-function switchTab(group, tab) {
-  ['single','bulk','bulkdel'].forEach(t => {
-    const panel = document.getElementById(`${group}-tab-${t}`);
-    if (panel) panel.classList.toggle('active', t === tab);
-  });
-  const modalId = group === 'name' ? 'nameModal' : group === 'db' ? 'dbModal' : 'statusModal';
-  document.querySelectorAll(`#${modalId} .manage-tab`).forEach((btn, i) => {
-    btn.classList.toggle('active', ['single','bulk','bulkdel'][i] === tab);
-  });
-  if (tab === 'bulkdel') {
-    if (group === 'name')   renderNameCheckboxes();
-    if (group === 'db')     renderDbCheckboxes();
-    if (group === 'status') renderStatusCheckboxes();
+// ============================================================
+// TIMER LOGIC
+// ============================================================
+function timerPlay(id) {
+  const row = rows.find(r => r.id === id);
+  if (!row) return;
+  const t = row.timer;
+  if (t.isRunning && !t.isPaused) return; // already running
+  if (!t.isRunning) {
+    t.startIST = formatISTTime(new Date());
+    t.elapsed = 0;
   }
+  t.isRunning = true;
+  t.isPaused = false;
+  t.runStart = Date.now();
+  // Start interval
+  if (timerIntervals[id]) clearInterval(timerIntervals[id]);
+  timerIntervals[id] = setInterval(() => tickTimer(id), 500);
+  updateTimerCell(id);
+  saveRows();
 }
 
-function selectAllManage(containerId, val) {
-  document.querySelectorAll(`#${containerId} input[type=checkbox]`).forEach(cb => {
-    cb.checked = val;
-    cb.closest('.check-item').classList.toggle('checked', val);
+function timerPause(id) {
+  const row = rows.find(r => r.id === id);
+  if (!row || !row.timer.isRunning) return;
+  const t = row.timer;
+  t.elapsed += Date.now() - t.runStart;
+  t.isPaused = true;
+  if (timerIntervals[id]) { clearInterval(timerIntervals[id]); delete timerIntervals[id]; }
+  updateTimerCell(id);
+  saveRows();
+}
+
+function timerStop(id) {
+  const row = rows.find(r => r.id === id);
+  if (!row) return;
+  const t = row.timer;
+  if (t.isRunning && !t.isPaused) { t.elapsed += Date.now() - t.runStart; }
+  t.isRunning = false;
+  t.isPaused = false;
+  t.endIST = formatISTTime(new Date());
+  if (timerIntervals[id]) { clearInterval(timerIntervals[id]); delete timerIntervals[id]; }
+  updateTimerCell(id);
+  updateEndTimeCell(id);
+  updateTotalCell(id);
+  saveRows();
+}
+
+function timerReset(id) {
+  const row = rows.find(r => r.id === id);
+  if (!row) return;
+  if (timerIntervals[id]) { clearInterval(timerIntervals[id]); delete timerIntervals[id]; }
+  row.timer = { startIST: null, endIST: null, elapsed: 0, isRunning: false, isPaused: false, runStart: null };
+  updateTimerCell(id);
+  updateEndTimeCell(id);
+  updateTotalCell(id);
+  saveRows();
+}
+
+function tickTimer(id) {
+  const row = rows.find(r => r.id === id);
+  if (!row || !row.timer.isRunning || row.timer.isPaused) return;
+  updateTotalCell(id);
+}
+
+function getCurrentElapsed(row) {
+  const t = row.timer;
+  if (!t.isRunning) return t.elapsed;
+  if (t.isPaused) return t.elapsed;
+  return t.elapsed + (Date.now() - t.runStart);
+}
+
+// ============================================================
+// CELL-LEVEL UPDATES (fast, no full re-render)
+// ============================================================
+function updateTimerCell(id) {
+  const row = rows.find(r => r.id === id);
+  if (!row) return;
+  const t = row.timer;
+  const cell = document.querySelector(`[data-timer-id="${id}"]`);
+  if (!cell) return;
+  const disp = cell.querySelector('.timer-display');
+  if (!t.isRunning && t.elapsed === 0 && !t.startIST) {
+    disp.textContent = '--:--:--'; disp.className = 'timer-display';
+  } else {
+    const el = getCurrentElapsed(row);
+    disp.textContent = msToHMS(el);
+    disp.className = 'timer-display' + (t.isRunning && !t.isPaused ? ' running' : t.isPaused ? ' paused' : '');
+  }
+  // Also update start time display
+  const stCell = document.querySelector(`[data-starttime-id="${id}"]`);
+  if (stCell) stCell.textContent = t.startIST || '-';
+}
+
+function updateEndTimeCell(id) {
+  const row = rows.find(r => r.id === id);
+  if (!row) return;
+  const cell = document.querySelector(`[data-endtime-id="${id}"]`);
+  if (cell) cell.textContent = row.timer.endIST || '-';
+}
+
+function updateTotalCell(id) {
+  const row = rows.find(r => r.id === id);
+  if (!row) return;
+  const cell = document.querySelector(`[data-total-id="${id}"]`);
+  if (!cell) return;
+  const el = getCurrentElapsed(row);
+  cell.textContent = el > 0 ? msToHMS(el) : '-';
+}
+
+// ============================================================
+// RESUME ACTIVE TIMERS ON LOAD
+// ============================================================
+function resumeTimers() {
+  rows.forEach(row => {
+    const t = row.timer;
+    if (t.isRunning && !t.isPaused && t.runStart) {
+      // Timer was running when page was saved, add elapsed since runStart
+      // runStart was saved as a timestamp; elapsed already accumulated in saveRows
+      // reset runStart to now
+      t.runStart = Date.now();
+      timerIntervals[row.id] = setInterval(() => tickTimer(row.id), 500);
+    }
   });
 }
 
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-// ── NAMES ──
-function openNameModal() {
-  renderNamesList(); renderNameCheckboxes();
-  document.getElementById('names-count').textContent = `(${names.length})`;
-  switchTab('name','single');
-  document.getElementById('nameModal').classList.add('open');
-  setTimeout(() => document.getElementById('newNameInput').focus(), 50);
-}
-
-function renderNamesList() {
-  const c = document.getElementById('namesList');
-  if (document.getElementById('names-count')) document.getElementById('names-count').textContent = `(${names.length})`;
-  c.innerHTML = '';
-  names.forEach((name, idx) => {
-    const div = document.createElement('div');
-    div.className = 'manage-item';
-    div.innerHTML = `
-      <div class="manage-item-name"><input type="text" value="${name}" onchange="renameName(${idx},this.value)" /></div>
-      <div class="manage-item-actions"><button class="mini-btn del" onclick="deleteName(${idx})">&#x2715;</button></div>`;
-    c.appendChild(div);
+// ============================================================
+// RENDER TABLE
+// ============================================================
+function renderTable() {
+  const tbody = document.getElementById('tableBody');
+  if (rows.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="15"><div class="empty-state"><div class="icon">📋</div><p>No rows yet. Click <strong>+ Add Row</strong> to get started.</p></div></td></tr>`;
+    updateRowCount(); return;
+  }
+  tbody.innerHTML = rows.map((row, i) => buildRowHTML(row, i)).join('');
+  // Re-attach running timers display
+  rows.forEach(row => {
+    if (row.timer.isRunning || row.timer.elapsed > 0) {
+      updateTimerCell(row.id);
+      updateEndTimeCell(row.id);
+      updateTotalCell(row.id);
+    }
   });
+  updateRowCount();
 }
 
-function renderNameCheckboxes() {
-  const c = document.getElementById('nameCheckboxes');
-  c.innerHTML = '';
-  names.forEach((name, idx) => {
-    const div = document.createElement('div');
-    div.className = 'check-item';
-    div.innerHTML = `<input type="checkbox" id="nchk-${idx}" onchange="this.closest('.check-item').classList.toggle('checked',this.checked)"><label for="nchk-${idx}">${name}</label>`;
-    c.appendChild(div);
-  });
+function buildRowHTML(row, i) {
+  const t = row.timer;
+  const el = getCurrentElapsed(row);
+  const totalDisp = el > 0 ? msToHMS(el) : '-';
+  const startDisp = t.startIST || '-';
+  const endDisp = t.endIST || '-';
+  const timerClass = t.isRunning && !t.isPaused ? ' running' : t.isPaused ? ' paused' : '';
+
+  const nameOpts = ['', ...names].map(n => `<option value="${esc(n)}" ${row.name===n?'selected':''}>${n||'-- Select --'}</option>`).join('');
+  const dbOpts = ['', ...dbs].map(d => `<option value="${esc(d)}" ${row.db===d?'selected':''}>${d||'-- Select --'}</option>`).join('');
+  const statusOpts = ['', ...statuses].map(s => `<option value="${esc(s)}" ${row.status===s?'selected':''}>${s||'-- Select --'}</option>`).join('');
+  const rateOpts = ['','YES','NO'].map(r => `<option value="${r}" ${row.rates===r?'selected':''}>${r||'-- Select --'}</option>`).join('');
+  const monthOpts = ['', ...MONTHS].map(m => `<option value="${m}" ${row.month===m?'selected':''}>${m||'--'}</option>`).join('');
+
+  return `<tr data-row-id="${row.id}">
+    <td class="col-num">${i+1}</td>
+    <td class="col-date"><input class="cell-input" type="text" value="${esc(row.date)}" placeholder="-" onchange="updateField('${row.id}','date',this.value)" style="font-size:11.5px;"></td>
+    <td class="col-month"><select class="cell-select" onchange="updateField('${row.id}','month',this.value)">${monthOpts}</select></td>
+    <td class="col-name"><select class="cell-select" onchange="updateField('${row.id}','name',this.value)">${nameOpts}</select></td>
+    <td class="col-event"><input class="cell-input" type="text" value="${esc(row.event)}" placeholder="-" onchange="updateField('${row.id}','event',this.value)"></td>
+    <td class="col-db"><select class="cell-select" onchange="updateField('${row.id}','db',this.value)">${dbOpts}</select></td>
+    <td class="col-sdate"><input class="cell-input" type="date" value="${esc(row.startDate)}" onchange="updateField('${row.id}','startDate',this.value)" style="font-size:11px;"></td>
+    <td class="col-edate"><input class="cell-input" type="date" value="${esc(row.endDate)}" onchange="updateField('${row.id}','endDate',this.value)" style="font-size:11px;"></td>
+    <td class="col-status"><select class="cell-select" onchange="updateField('${row.id}','status',this.value)">${statusOpts}</select></td>
+    <td class="col-rate"><select class="cell-select" style="color:${row.rates==='YES'?'var(--green)':row.rates==='NO'?'var(--red)':'var(--text)'}" onchange="this.style.color=this.value==='YES'?'var(--green)':this.value==='NO'?'var(--red)':'var(--text)';updateField('${row.id}','rates',this.value)">${rateOpts}</select></td>
+    <td class="col-lines"><input class="cell-input" type="number" value="${esc(row.lines)}" placeholder="-" min="0" onchange="updateField('${row.id}','lines',this.value)"></td>
+    <td class="col-stime">
+      <div class="timer-cell" data-timer-id="${row.id}">
+        <span class="timer-display${timerClass}" >${el>0?msToHMS(el):'--:--:--'}</span>
+        <button class="timer-btn timer-play" onclick="timerPlay('${row.id}')" title="Play">▶</button>
+        <button class="timer-btn timer-pause" onclick="timerPause('${row.id}')" title="Pause">⏸</button>
+        <button class="timer-btn timer-stop" onclick="timerStop('${row.id}')" title="Stop">⏹</button>
+        <button class="timer-btn timer-reset" onclick="timerReset('${row.id}')" title="Reset">↺</button>
+      </div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px;font-family:var(--font-mono);" data-starttime-id="${row.id}">${startDisp}</div>
+    </td>
+    <td class="col-etime" data-endtime-id="${row.id}" style="font-family:var(--font-mono);font-size:11.5px;color:var(--text2);">${endDisp}</td>
+    <td class="col-total" data-total-id="${row.id}" style="font-family:var(--font-mono);font-size:12px;color:var(--sky);">${totalDisp}</td>
+    <td class="col-actions">
+      <div class="row-actions">
+        <button class="btn btn-sky btn-sm btn-icon" onclick="copyRow('${row.id}')" title="Copy row">⎘</button>
+        <button class="btn btn-red btn-sm btn-icon" onclick="deleteRow('${row.id}')" title="Delete row">✕</button>
+      </div>
+    </td>
+  </tr>`;
 }
 
-function addName() {
-  const val = document.getElementById('newNameInput').value.trim();
-  if (!val) return;
-  if (!names.includes(val)) { names.push(val); scheduleSave(); render(); showToast(`"${val}" added`); }
-  document.getElementById('newNameInput').value = '';
-  renderNamesList(); renderNameCheckboxes();
-  if (document.getElementById('names-count')) document.getElementById('names-count').textContent = `(${names.length})`;
+function esc(v) {
+  if (v === null || v === undefined || v === '') return '';
+  return String(v).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
+function updateRowCount() {
+  document.getElementById('rowCount').textContent = `${rows.length} row${rows.length===1?'':'s'}`;
+}
+
+// ============================================================
+// BULK NAME OPERATIONS
+// ============================================================
 function bulkAddNames() {
-  const lines = document.getElementById('bulkNameInput').value.split('\n').map(l=>l.trim()).filter(Boolean);
+  const raw = document.getElementById('bulkAddNameInput').value;
+  const newNames = raw.split('\n').map(s=>s.trim()).filter(Boolean);
+  if (!newNames.length) { toast('No names entered', 'error'); return; }
   let added = 0;
-  lines.forEach(v => { if (v && !names.includes(v)) { names.push(v); added++; } });
-  if (added) { scheduleSave(); render(); showToast(`${added} name(s) added`); }
-  document.getElementById('bulkNameInput').value = '';
-  renderNamesList(); renderNameCheckboxes();
-  if (document.getElementById('names-count')) document.getElementById('names-count').textContent = `(${names.length})`;
+  newNames.forEach(n => { if (!names.includes(n)) { names.push(n); added++; } });
+  saveNames();
+  closeModal('bulkAddName');
+  document.getElementById('bulkAddNameInput').value = '';
+  renderTable();
+  toast(`Added ${added} name(s)`, 'success');
 }
 
 function bulkDeleteNames() {
-  const checked = [...document.querySelectorAll('#nameCheckboxes input:checked')].map(cb => parseInt(cb.id.replace('nchk-','')));
-  if (!checked.length) { showToast('Select at least one name'); return; }
-  const toDelete = checked.map(i => names[i]);
-  if (names.length - toDelete.length < 1) { showToast('Must keep at least one name'); return; }
-  if (!confirm(`Delete ${toDelete.length} name(s)?`)) return;
-  names = names.filter(n => !toDelete.includes(n));
-  scheduleSave(); render(); renderNamesList(); renderNameCheckboxes();
-  if (document.getElementById('names-count')) document.getElementById('names-count').textContent = `(${names.length})`;
-  showToast(`${toDelete.length} name(s) deleted`);
+  const checked = [...document.querySelectorAll('#delNameList input:checked')].map(c => c.value);
+  if (!checked.length) { toast('Nothing selected', 'error'); return; }
+  names = names.filter(n => !checked.includes(n));
+  saveNames();
+  closeModal('bulkDelName');
+  renderTable();
+  toast(`Deleted ${checked.length} name(s)`, 'success');
 }
 
-function renameName(idx, newVal) {
-  const t = newVal.trim();
-  if (!t) return;
-  const old = names[idx];
-  if (old === t) return;
-  names[idx] = t;
-  rows.forEach(r => { if (r.name === old) r.name = t; });
-  scheduleSave(); render();
-}
-
-function deleteName(idx) {
-  if (names.length <= 1) { showToast('Need at least one name'); return; }
-  const n = names[idx];
-  if (!confirm(`Delete "${n}"?`)) return;
-  names.splice(idx, 1);
-  scheduleSave(); render(); renderNamesList(); renderNameCheckboxes();
-  if (document.getElementById('names-count')) document.getElementById('names-count').textContent = `(${names.length})`;
-  showToast(`"${n}" deleted`);
-}
-
-// ── DATABASES ──
-function openDbModal() {
-  renderDbList(); renderDbCheckboxes();
-  document.getElementById('dbs-count').textContent = `(${databases.length})`;
-  switchTab('db','single');
-  document.getElementById('dbModal').classList.add('open');
-  setTimeout(() => document.getElementById('newDbInput').focus(), 50);
-}
-
-function renderDbList() {
-  const c = document.getElementById('dbList');
-  if (document.getElementById('dbs-count')) document.getElementById('dbs-count').textContent = `(${databases.length})`;
-  c.innerHTML = '';
-  databases.forEach((db, idx) => {
-    const div = document.createElement('div');
-    div.className = 'manage-item';
-    div.innerHTML = `
-      <div class="manage-item-name"><input type="text" value="${db}" onchange="renameDb(${idx},this.value)" /></div>
-      <div class="manage-item-actions"><button class="mini-btn del" onclick="deleteDb(${idx})">&#x2715;</button></div>`;
-    c.appendChild(div);
-  });
-}
-
-function renderDbCheckboxes() {
-  const c = document.getElementById('dbCheckboxes');
-  c.innerHTML = '';
-  databases.forEach((db, idx) => {
-    const div = document.createElement('div');
-    div.className = 'check-item';
-    div.innerHTML = `<input type="checkbox" id="dbchk-${idx}" onchange="this.closest('.check-item').classList.toggle('checked',this.checked)"><label for="dbchk-${idx}">${db}</label>`;
-    c.appendChild(div);
-  });
-}
-
-function addDatabase() {
-  const val = document.getElementById('newDbInput').value.trim();
-  if (!val) return;
-  if (!databases.includes(val)) { databases.push(val); scheduleSave(); render(); showToast(`"${val}" added`); }
-  document.getElementById('newDbInput').value = '';
-  renderDbList(); renderDbCheckboxes();
-  if (document.getElementById('dbs-count')) document.getElementById('dbs-count').textContent = `(${databases.length})`;
-}
-
-function bulkAddDbs() {
-  const lines = document.getElementById('bulkDbInput').value.split('\n').map(l=>l.trim()).filter(Boolean);
+// ============================================================
+// BULK DB OPERATIONS
+// ============================================================
+function bulkAddDBs() {
+  const raw = document.getElementById('bulkAddDBInput').value;
+  const newDBs = raw.split('\n').map(s=>s.trim()).filter(Boolean);
   let added = 0;
-  lines.forEach(v => { if (v && !databases.includes(v)) { databases.push(v); added++; } });
-  if (added) { scheduleSave(); render(); showToast(`${added} database(s) added`); }
-  document.getElementById('bulkDbInput').value = '';
-  renderDbList(); renderDbCheckboxes();
-  if (document.getElementById('dbs-count')) document.getElementById('dbs-count').textContent = `(${databases.length})`;
+  newDBs.forEach(d => { if (!dbs.includes(d)) { dbs.push(d); added++; } });
+  saveDbs();
+  closeModal('bulkAddDB');
+  document.getElementById('bulkAddDBInput').value = '';
+  renderTable();
+  toast(`Added ${added} database(s)`, 'success');
 }
 
-function bulkDeleteDbs() {
-  const checked = [...document.querySelectorAll('#dbCheckboxes input:checked')].map(cb => parseInt(cb.id.replace('dbchk-','')));
-  if (!checked.length) { showToast('Select at least one database'); return; }
-  const toDelete = checked.map(i => databases[i]);
-  if (databases.length - toDelete.length < 1) { showToast('Must keep at least one database'); return; }
-  if (!confirm(`Delete ${toDelete.length} database(s)?`)) return;
-  databases = databases.filter(d => !toDelete.includes(d));
-  scheduleSave(); render(); renderDbList(); renderDbCheckboxes();
-  if (document.getElementById('dbs-count')) document.getElementById('dbs-count').textContent = `(${databases.length})`;
-  showToast(`${toDelete.length} database(s) deleted`);
+function bulkDeleteDBs() {
+  const checked = [...document.querySelectorAll('#delDBList input:checked')].map(c => c.value);
+  if (!checked.length) { toast('Nothing selected', 'error'); return; }
+  dbs = dbs.filter(d => !checked.includes(d));
+  saveDbs();
+  closeModal('bulkDelDB');
+  renderTable();
+  toast(`Deleted ${checked.length} database(s)`, 'success');
 }
 
-function renameDb(idx, newVal) {
-  const t = newVal.trim();
-  if (!t) return;
-  const old = databases[idx];
-  if (old === t) return;
-  databases[idx] = t;
-  rows.forEach(r => { if (r.database === old) r.database = t; });
-  scheduleSave(); render();
-}
-
-function deleteDb(idx) {
-  if (databases.length <= 1) { showToast('Need at least one database'); return; }
-  const d = databases[idx];
-  if (!confirm(`Delete "${d}"?`)) return;
-  databases.splice(idx, 1);
-  scheduleSave(); render(); renderDbList(); renderDbCheckboxes();
-  if (document.getElementById('dbs-count')) document.getElementById('dbs-count').textContent = `(${databases.length})`;
-  showToast(`"${d}" deleted`);
-}
-
-// ── STATUSES ──
-function openStatusModal() {
-  renderStatusList(); renderStatusCheckboxes();
-  document.getElementById('statuses-count').textContent = `(${statusOptions.length})`;
-  switchTab('status','single');
-  document.getElementById('statusModal').classList.add('open');
-  setTimeout(() => document.getElementById('newStatusKey').focus(), 50);
-}
-
-function renderStatusList() {
-  const c = document.getElementById('statusList');
-  if (document.getElementById('statuses-count')) document.getElementById('statuses-count').textContent = `(${statusOptions.length})`;
-  c.innerHTML = '';
-  statusOptions.forEach((key, idx) => {
-    const lbl = statusLabels[key] || key;
-    const div = document.createElement('div');
-    div.className = 'manage-item';
-    div.innerHTML = `
-      <div class="manage-item-name" style="display:flex;gap:8px;flex:1">
-        <input type="text" value="${key}" placeholder="key" style="width:90px;flex-shrink:0" onchange="renameStatusKey(${idx},this.value)" />
-        <input type="text" value="${lbl}" placeholder="label" style="flex:1" onchange="renameStatusLabel('${key}',this.value)" />
-      </div>
-      <div class="manage-item-actions"><button class="mini-btn del" onclick="deleteStatus('${key}')">&#x2715;</button></div>`;
-    c.appendChild(div);
-  });
-}
-
-function renderStatusCheckboxes() {
-  const c = document.getElementById('statusCheckboxes');
-  c.innerHTML = '';
-  statusOptions.forEach((key, idx) => {
-    const div = document.createElement('div');
-    div.className = 'check-item';
-    div.innerHTML = `<input type="checkbox" id="schk-${idx}" onchange="this.closest('.check-item').classList.toggle('checked',this.checked)"><label for="schk-${idx}">${statusLabels[key]||key} <span style="color:var(--muted);font-size:11px">(${key})</span></label>`;
-    c.appendChild(div);
-  });
-}
-
-function addStatus() {
-  const key = document.getElementById('newStatusKey').value.trim().toLowerCase().replace(/\s+/g,'_');
-  const label = document.getElementById('newStatusLabel').value.trim();
-  if (!key || !label) { showToast('Key and label are both required'); return; }
-  if (!statusOptions.includes(key)) {
-    statusOptions.push(key);
-    statusLabels[key] = label;
-    scheduleSave(); render(); showToast(`Status "${label}" added`);
-  }
-  document.getElementById('newStatusKey').value = '';
-  document.getElementById('newStatusLabel').value = '';
-  renderStatusList(); renderStatusCheckboxes();
-  if (document.getElementById('statuses-count')) document.getElementById('statuses-count').textContent = `(${statusOptions.length})`;
-}
-
+// ============================================================
+// BULK STATUS OPERATIONS
+// ============================================================
 function bulkAddStatuses() {
-  const lines = document.getElementById('bulkStatusInput').value.split('\n').map(l=>l.trim()).filter(Boolean);
+  const raw = document.getElementById('bulkAddStatusInput').value;
+  const newS = raw.split('\n').map(s=>s.trim()).filter(Boolean);
   let added = 0;
-  lines.forEach(line => {
-    const colonIdx = line.indexOf(':');
-    if (colonIdx < 0) return;
-    const key = line.slice(0, colonIdx).trim().toLowerCase().replace(/\s+/g,'_');
-    const lbl = line.slice(colonIdx + 1).trim();
-    if (key && lbl && !statusOptions.includes(key)) {
-      statusOptions.push(key);
-      statusLabels[key] = lbl;
-      added++;
-    }
-  });
-  if (added) { scheduleSave(); render(); showToast(`${added} status(es) added`); }
-  document.getElementById('bulkStatusInput').value = '';
-  renderStatusList(); renderStatusCheckboxes();
-  if (document.getElementById('statuses-count')) document.getElementById('statuses-count').textContent = `(${statusOptions.length})`;
+  newS.forEach(s => { if (!statuses.includes(s)) { statuses.push(s); added++; } });
+  saveStatuses();
+  closeModal('bulkAddStatus');
+  document.getElementById('bulkAddStatusInput').value = '';
+  renderTable();
+  toast(`Added ${added} status option(s)`, 'success');
 }
 
 function bulkDeleteStatuses() {
-  const checked = [...document.querySelectorAll('#statusCheckboxes input:checked')].map(cb => parseInt(cb.id.replace('schk-','')));
-  if (!checked.length) { showToast('Select at least one status'); return; }
-  const toDelete = checked.map(i => statusOptions[i]);
-  if (statusOptions.length - toDelete.length < 1) { showToast('Must keep at least one status'); return; }
-  if (!confirm(`Delete ${toDelete.length} status(es)?`)) return;
-  toDelete.forEach(k => { statusOptions = statusOptions.filter(s => s !== k); delete statusLabels[k]; });
-  scheduleSave(); render(); renderStatusList(); renderStatusCheckboxes();
-  if (document.getElementById('statuses-count')) document.getElementById('statuses-count').textContent = `(${statusOptions.length})`;
-  showToast(`${toDelete.length} status(es) deleted`);
+  const checked = [...document.querySelectorAll('#delStatusList input:checked')].map(c => c.value);
+  if (!checked.length) { toast('Nothing selected', 'error'); return; }
+  statuses = statuses.filter(s => !checked.includes(s));
+  saveStatuses();
+  closeModal('bulkDelStatus');
+  renderTable();
+  toast(`Deleted ${checked.length} status option(s)`, 'success');
 }
 
-function renameStatusKey(idx, newKey) {
-  const t = newKey.trim().toLowerCase().replace(/\s+/g,'_');
-  if (!t) return;
-  const old = statusOptions[idx];
-  if (old === t || statusOptions.includes(t)) return;
-  statusOptions[idx] = t;
-  statusLabels[t] = statusLabels[old];
-  delete statusLabels[old];
-  rows.forEach(r => { if (r.status === old) r.status = t; });
-  scheduleSave(); render();
+// ============================================================
+// COPY ALL
+// ============================================================
+function copyAll() {
+  if (!rows.length) { toast('No rows to copy', 'error'); return; }
+  const lines = [];
+  rows.forEach(row => {
+    const t = row.timer;
+    const el = getCurrentElapsed(row);
+    lines.push([
+      row.date||'-', row.month||'-', row.name||'-', row.event||'-', row.db||'-',
+      row.startDate||'-', row.endDate||'-', row.status||'-', row.rates||'-',
+      row.lines||'-', t.startIST||'-', t.endIST||'-', el>0?msToHMS(el):'-'
+    ].join('\t'));
+  });
+  navigator.clipboard.writeText(lines.join('\n')).then(() => toast('All rows copied to clipboard', 'info'));
 }
 
-function renameStatusLabel(key, newLabel) {
-  const t = newLabel.trim();
-  if (!t) return;
-  statusLabels[key] = t;
-  scheduleSave(); render();
-}
-
-function deleteStatus(key) {
-  if (statusOptions.length <= 1) { showToast('Must keep at least one status'); return; }
-  if (!confirm(`Delete status "${statusLabels[key]||key}"?`)) return;
-  statusOptions = statusOptions.filter(s => s !== key);
-  delete statusLabels[key];
-  scheduleSave(); render(); renderStatusList(); renderStatusCheckboxes();
-  if (document.getElementById('statuses-count')) document.getElementById('statuses-count').textContent = `(${statusOptions.length})`;
-  showToast('Status deleted');
-}
-
-// ── EXPORT ──
+// ============================================================
+// EXPORT CSV
+// ============================================================
 function exportCSV() {
-  const headers = ['#','Date (IST)','Month','Name','Episode Name','Database','Start Date','End Date','Status','Rate','Lines','Start Time','End Time','Elapsed'];
-  const csvRows = [headers.join(',')];
-  rows.forEach((row, idx) => {
-    csvRows.push([
-      idx+1, row.date, row.month, row.name,
-      `"${row.episode}"`, row.database, row.startDate, row.endDate,
-      row.status, row.rate ? 'Yes' : 'No', row.lines,
-      row.startTime, row.endTime, formatElapsed(row.elapsed)
+  if (!rows.length) { toast('No rows to export', 'error'); return; }
+  const headers = ['#','Date (IST)','Month','Name','Event Name','Database','Start Date','End Date','Status','Rates','Lines Processed','Start Time (IST)','End Time (IST)','Total Time'];
+  const lines = [headers.join(',')];
+  rows.forEach((row, i) => {
+    const t = row.timer;
+    const el = getCurrentElapsed(row);
+    lines.push([
+      i+1, csvCell(row.date), csvCell(row.month), csvCell(row.name), csvCell(row.event),
+      csvCell(row.db), csvCell(row.startDate), csvCell(row.endDate), csvCell(row.status),
+      csvCell(row.rates), csvCell(row.lines), csvCell(t.startIST), csvCell(t.endIST),
+      el>0?msToHMS(el):'-'
     ].join(','));
   });
-  const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+  const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `production_tracker_${toISTDateString(getIST())}.csv`;
-  a.click();
-  showToast('Exported to CSV');
+  a.href = url; a.download = `opstrace_${formatISTDate(new Date()).replace(/\//g,'-')}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+  toast('CSV exported', 'success');
 }
 
+function csvCell(v) {
+  const s = (v === null || v === undefined || v === '') ? '-' : String(v);
+  return s.includes(',') || s.includes('"') || s.includes('\n') ? `"${s.replace(/"/g,'""')}"` : s;
+}
+
+// ============================================================
+// CLEAR ALL
+// ============================================================
+function confirmClearAll() { openModal('clearConfirm'); }
 function clearAll() {
-  if (!confirm('Clear all rows? This cannot be undone.')) return;
-  Object.values(timers).forEach(t => { if (t.interval) clearInterval(t.interval); });
-  timers = {};
+  Object.values(timerIntervals).forEach(id => clearInterval(id));
+  Object.keys(timerIntervals).forEach(k => delete timerIntervals[k]);
   rows = [];
-  runningCount = 0;
-  scheduleSave();
-  render();
-  showToast('All rows cleared');
+  saveRows();
+  closeModal('clearConfirm');
+  renderTable();
+  toast('All rows cleared', 'info');
 }
 
-// ── TOAST ──
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = '✓ ' + msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
+// ============================================================
+// MODAL MANAGEMENT
+// ============================================================
+function openModal(name) {
+  // Populate list modals
+  if (name === 'bulkDelName') {
+    document.getElementById('delNameList').innerHTML = names.map(n =>
+      `<div class="modal-list-item"><input type="checkbox" id="dn_${esc(n)}" value="${esc(n)}"><label for="dn_${esc(n)}">${esc(n)}</label></div>`
+    ).join('') || '<p style="color:var(--muted);font-size:12px;text-align:center;padding:12px;">No names in the list</p>';
+  }
+  if (name === 'bulkDelDB') {
+    document.getElementById('delDBList').innerHTML = dbs.map(d =>
+      `<div class="modal-list-item"><input type="checkbox" id="dd_${esc(d)}" value="${esc(d)}"><label for="dd_${esc(d)}">${esc(d)}</label></div>`
+    ).join('') || '<p style="color:var(--muted);font-size:12px;text-align:center;padding:12px;">No databases in the list</p>';
+  }
+  if (name === 'bulkDelStatus') {
+    document.getElementById('delStatusList').innerHTML = statuses.map(s =>
+      `<div class="modal-list-item"><input type="checkbox" id="ds_${esc(s)}" value="${esc(s)}"><label for="ds_${esc(s)}">${esc(s)}</label></div>`
+    ).join('') || '<p style="color:var(--muted);font-size:12px;text-align:center;padding:12px;">No statuses in the list</p>';
+  }
+  document.getElementById(`modal-${name}`).classList.add('active');
 }
+function closeModal(name) { document.getElementById(`modal-${name}`).classList.remove('active'); }
 
-// ── KEYBOARD SHORTCUTS ──
-document.addEventListener('keydown', e => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') addRow();
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('active'); });
 });
 
-// ── MODAL CLOSE ON BACKDROP ──
-document.querySelectorAll('.modal-overlay').forEach(el => {
-  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+// ============================================================
+// DROPDOWN MANAGEMENT
+// ============================================================
+function toggleDropdown(id) {
+  const el = document.getElementById(id);
+  const isOpen = el.classList.contains('open');
+  closeDropdowns();
+  if (!isOpen) el.classList.add('open');
+}
+function closeDropdowns() {
+  document.querySelectorAll('.manage-dropdown.open').forEach(d => d.classList.remove('open'));
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.relative')) closeDropdowns();
 });
 
-// ── INIT — load from localStorage or use demo data ──
-const hasData = loadAll();
-if (!hasData) {
-  const demoData = [
-    { name:'A', episode:'hjfgjfg', database:'Chennai', status:'otto', rate:true, lines:'12' },
-    { name:'B', episode:'fgjfgj', database:'Mumbai', status:'pkg', rate:false, lines:'' },
-    { name:'C', episode:'fgjfgj', database:'Delhi', status:'epi', rate:false, lines:'3' },
-    { name:'A', episode:'mvb', database:'Bangalore', status:'both', rate:false, lines:'' },
-    { name:'B', episode:'fgjfgj', database:'Hyderabad', status:'bulk', rate:false, lines:'5' },
-  ];
-  demoData.forEach(d => rows.push(createRow(d)));
+// ============================================================
+// TOAST
+// ============================================================
+function toast(msg, type = 'info') {
+  const container = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  container.appendChild(t);
+  setTimeout(() => { if (t.parentNode) t.parentNode.removeChild(t); }, 2700);
 }
-render();
-if (hasData) showToast('Data restored from last session');
+
+// ============================================================
+// SAVE ON UNLOAD
+// ============================================================
+window.addEventListener('beforeunload', () => {
+  // Snapshot elapsed for running timers
+  rows.forEach(row => {
+    const t = row.timer;
+    if (t.isRunning && !t.isPaused && t.runStart) {
+      t.elapsed += Date.now() - t.runStart;
+      t.runStart = Date.now();
+    }
+  });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(rows));
+});
+
+// ============================================================
+// INIT
+// ============================================================
+renderTable();
+resumeTimers();
 </script>
 </body>
 </html>
